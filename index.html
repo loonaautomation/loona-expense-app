@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loona Expense App</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+    padding: 20px; color: #fff;
+  }
+  .card {
+    background: rgba(255,255,255,0.07); border-radius: 24px; padding: 28px 22px;
+    width: 100%; max-width: 400px; backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4); margin: 10px 0;
+  }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  h1 { font-size: 22px; }
+  .gear {
+    background: rgba(255,255,255,0.1); border: none; border-radius: 50%;
+    width: 38px; height: 38px; font-size: 18px; cursor: pointer; color: #fff;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .gear:active { transform: rotate(40deg); }
+  .sub { text-align: center; color: #aaa; font-size: 12px; margin-bottom: 22px; letter-spacing: 0.3px; }
+  label { display: block; font-size: 13px; margin-bottom: 6px; color: #ccc; font-weight: 600; }
+  select, input[type=text], input[type=number] {
+    width: 100%; padding: 13px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.09); color: #fff; font-size: 16px; margin-bottom: 16px;
+    outline: none;
+  }
+  select option { background: #1a1a2e; color: #fff; }
+  select:focus, input:focus { border-color: #4CAF50; }
+  .btn-main {
+    width: 100%; padding: 15px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
+    transition: transform 0.1s; margin-bottom: 6px;
+  }
+  .btn-main:active { transform: scale(0.97); }
+  .btn-main:disabled { opacity: 0.6; }
+  .btn-toggle {
+    width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px;
+    background: rgba(255,255,255,0.06); color: #fff; font-size: 14px; font-weight: 600;
+    cursor: pointer; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .btn-toggle:active { background: rgba(255,255,255,0.12); }
+  #msg { text-align: center; margin-top: 12px; font-size: 14px; min-height: 22px; }
+  .ok { color: #4CAF50; } .err { color: #f44336; }
+
+  /* Panels */
+  .panel { display: none; margin-top: 10px; padding: 16px; background: rgba(0,0,0,0.25);
+    border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); }
+  .panel.open { display: block; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Calculator */
+  #calcDisplay {
+    background: rgba(0,0,0,0.4); border-radius: 10px; padding: 16px 14px;
+    font-size: 28px; text-align: right; margin-bottom: 12px; min-height: 62px;
+    overflow-x: auto; white-space: nowrap; font-weight: 300; letter-spacing: 1px;
+  }
+  .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .calc-grid button {
+    padding: 14px 0; border: none; border-radius: 10px; font-size: 18px; cursor: pointer;
+    background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; width: 100%;
+  }
+  .calc-grid button:active { background: rgba(255,255,255,0.22); }
+  .calc-grid button.op { background: rgba(255,152,0,0.25); color: #ffb74d; }
+  .calc-grid button.eq { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+  .calc-grid button.clr { background: rgba(244,67,54,0.25); color: #ef9a9a; }
+  .calc-use {
+    width: 100%; margin-top: 10px; padding: 10px; border-radius: 10px; border: 1px dashed rgba(76,175,80,0.5);
+    background: transparent; color: #81c784; font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+
+  /* Summary */
+  .sum-row { display: flex; justify-content: space-between; padding: 12px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 14px; }
+  .sum-row:last-child { border-bottom: none; }
+  .sum-row .val { font-weight: bold; }
+  .grand { font-size: 16px; }
+  .grand .val { color: #4CAF50; font-size: 20px; }
+
+  /* History */
+  .history { margin-top: 18px; }
+  .history h3 { font-size: 14px; color: #aaa; margin-bottom: 8px; }
+  .h-item { display: flex; justify-content: space-between; padding: 10px 12px;
+    background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
+  .date-header {
+    font-size: 13px; color: #ffca28; margin: 12px 0 6px; font-weight: bold;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; background: rgba(255,202,40,0.08); border-radius: 8px;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .date-header:active { background: rgba(255,202,40,0.16); }
+  .arrow { font-size: 11px; }
+
+  /* Settings modal */
+  .modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6); z-index: 10; justify-content: center; align-items: center; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #1e1e3a; border-radius: 18px; padding: 24px; width: 100%; max-width: 360px;
+    border: 1px solid rgba(255,255,255,0.12); }
+  .modal h3 { margin-bottom: 6px; font-size: 17px; }
+  .modal p { font-size: 12px; color: #aaa; margin-bottom: 14px; line-height: 1.5; }
+  .modal .row { display: flex; gap: 8px; }
+  .modal .row .btn-main { margin-bottom: 0; }
+  .btn-ghost { padding: 15px 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.2);
+    background: transparent; color: #fff; cursor: pointer; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>Loona Expense App</h1>
+    <button class="gear" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+  <p class="sub">Track expenses in one click — works offline, no signup needed!</p>
+
+  <label>🧾 What did you buy?</label>
+  <select id="item">
+    <option value="Tea">☕ Tea</option>
+    <option value="Samosa">🥟 Samosa</option>
+    <option value="Transport">🛺 Transport / Fare</option>
+    <option value="Snacks">🍔 Snacks / Fast Food</option>
+    <option value="Recharge">📱 Mobile Recharge</option>
+    <option value="Dairy">🥛 Dairy / Milk</option>
+    <option value="Groceries">🥬 Groceries</option>
+    <option value="Meat">🍗 Meat</option>
+    <option value="Clothing">👕 Clothing</option>
+    <option value="Medicine">💊 Medicine</option>
+    <option value="Fuel">⛽ Fuel</option>
+    <option value="custom">✏️ Other...</option>
+  </select>
+
+  <div id="customBox" style="display:none;">
+    <label>✏️ Enter item name:</label>
+    <input type="text" id="customItem" placeholder="e.g.: Biryani">
+  </div>
+
+  <label>💵 Amount (Rs)</label>
+  <input type="number" id="price" placeholder="e.g.: 50" min="1">
+
+  <button class="btn-main" id="saveBtn" onclick="saveExpense()">✅ Save Expense</button>
+  <div id="msg"></div>
+
+  <button class="btn-toggle" onclick="togglePanel('calcPanel', this)">
+    <span>🧮 Calculator</span><span>▼</span>
+  </button>
+  <div class="panel" id="calcPanel">
+    <div id="calcDisplay">0</div>
+    <div class="calc-grid">
+      <button class="clr" onclick="calcClear()">C</button>
+      <button onclick="calcBack()">⌫</button>
+      <button class="op" onclick="calcSetOp('÷')">÷</button>
+      <button class="op" onclick="calcSetOp('×')">×</button>
+      <button onclick="calcDigit('7')">7</button>
+      <button onclick="calcDigit('8')">8</button>
+      <button onclick="calcDigit('9')">9</button>
+      <button class="op" onclick="calcSetOp('−')">−</button>
+      <button onclick="calcDigit('4')">4</button>
+      <button onclick="calcDigit('5')">5</button>
+      <button onclick="calcDigit('6')">6</button>
+      <button class="op" onclick="calcSetOp('+')">+</button>
+      <button onclick="calcDigit('1')">1</button>
+      <button onclick="calcDigit('2')">2</button>
+      <button onclick="calcDigit('3')">3</button>
+      <button class="eq" onclick="calcEquals()">=</button>
+      <button onclick="calcDigit('0')" style="grid-column: span 2;">0</button>
+      <button onclick="calcDigit('.')">.</button>
+    </div>
+    <button class="calc-use" onclick="calcUseGrand()">📊 Load Grand Total into calculator</button>
+  </div>
+
+  <button class="btn-toggle" onclick="togglePanel('sumPanel', this)">
+    <span>📊 Summary (tap to view)</span><span>▼</span>
+  </button>
+  <div class="panel" id="sumPanel">
+    <div class="sum-row grand"><span>💰 Grand Total</span><span class="val" id="grandTotal">Rs 0</span></div>
+    <div class="sum-row"><span>📅 Today's Total</span><span class="val" id="todayTotal">Rs 0</span></div>
+    <div class="sum-row"><span>🧾 Total Entries</span><span class="val" id="totalEntries">0</span></div>
+    <button class="calc-use" onclick="exportCSV()">📥 Export as Excel/CSV file</button>
+  </div>
+
+  <div class="history">
+    <h3>📝 Expenses — by date</h3>
+    <div id="histList"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="settingsModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h3>⚙️ Settings</h3>
+    <p><b>Optional</b> cloud backup. The app works 100% without this — your data stays on your device. If you want automatic backup to your own Google Sheet, paste your Make.com webhook URL here (advanced users).</p>
+    <label>Webhook URL</label>
+    <input type="text" id="webhookInput" placeholder="https://hook.eu1.make.com/...">
+    <div class="row">
+      <button class="btn-main" onclick="saveSettings()">Save</button>
+      <button class="btn-ghost" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var DEFAULT_WEBHOOK = ''; // PUBLIC BUILD: no webhook baked in (set your own in Settings)
+  function getWebhook() {
+    return localStorage.getItem('lea_webhook') || DEFAULT_WEBHOOK;
+  }
+
+  document.getElementById('item').addEventListener('change', function() {
+    document.getElementById('customBox').style.display =
+      this.value === 'custom' ? 'block' : 'none';
+  });
+
+  function togglePanel(id, btn) {
+    var p = document.getElementById(id);
+    var open = p.classList.toggle('open');
+    btn.querySelector('span:last-child').textContent = open ? '▲' : '▼';
+    if (id === 'sumPanel' && open) updateSummary();
+  }
+
+  function getTodayStr() {
+    var n = new Date();
+    return String(n.getDate()).padStart(2,'0') + '/' +
+           String(n.getMonth()+1).padStart(2,'0') + '/' + n.getFullYear();
+  }
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function getHist() {
+    return JSON.parse(localStorage.getItem('lea_hist') || '[]');
+  }
+
+  /* ---------- Summary ---------- */
+  function updateSummary() {
+    var h = getHist();
+    var grand = 0, today = 0;
+    var ts = getTodayStr();
+    h.forEach(function(x) {
+      var p = parseInt(x.price) || 0;
+      grand += p;
+      if (x.date === ts) today += p;
+    });
+    document.getElementById('grandTotal').textContent = 'Rs ' + grand;
+    document.getElementById('todayTotal').textContent = 'Rs ' + today;
+    document.getElementById('totalEntries').textContent = h.length;
+  }
+  function getGrandTotal() {
+    var t = 0;
+    getHist().forEach(function(x) { t += parseInt(x.price) || 0; });
+    return t;
+  }
+
+  /* ---------- History (collapsible by date) ---------- */
+  function loadHist() {
+    var h = getHist();
+    var list = document.getElementById('histList');
+    list.innerHTML = '';
+
+    var byDate = {};
+    h.forEach(function(x) {
+      var d = x.date || 'Older entries';
+      if (!byDate[d]) byDate[d] = [];
+      byDate[d].push(x);
+    });
+
+    var dates = Object.keys(byDate).sort(function(a, b) {
+      if (a === 'Older entries') return 1;
+      if (b === 'Older entries') return -1;
+      var pa = a.split('/'), pb = b.split('/');
+      return new Date(pb[2], pb[1]-1, pb[0]) - new Date(pa[2], pa[1]-1, pa[0]);
+    });
+
+    if (!dates.length) {
+      list.innerHTML = '<p style="color:#777;font-size:13px;text-align:center;">Nothing saved yet</p>';
+      return;
+    }
+
+    var todayStr = getTodayStr();
+    dates.forEach(function(d, idx) {
+      var items = byDate[d], total = 0;
+      var dh = document.createElement('div');
+      dh.className = 'date-header';
+      dh.innerHTML = '<span>' + (d === todayStr ? '📅 Today (' + d + ')' : '📅 ' + d) +
+                     '</span><span class="arrow">' + (idx === 0 ? '▲' : '▼') + '</span>';
+      var body = document.createElement('div');
+      if (idx !== 0) body.style.display = 'none';
+
+      items.forEach(function(x) {
+        total += parseInt(x.price) || 0;
+        var div = document.createElement('div');
+        div.className = 'h-item';
+        div.innerHTML = '<span>' + escHtml(x.item) + '</span><span>Rs ' + x.price + '</span>';
+        body.appendChild(div);
+      });
+
+      var t = document.createElement('div');
+      t.className = 'h-item';
+      t.style.background = 'rgba(76,175,80,0.2)';
+      t.style.fontWeight = 'bold';
+      t.innerHTML = '<span>📊 Day Total</span><span>Rs ' + total + '</span>';
+      body.appendChild(t);
+
+      dh.onclick = function() {
+        var hidden = body.style.display === 'none';
+        body.style.display = hidden ? 'block' : 'none';
+        dh.querySelector('.arrow').textContent = hidden ? '▲' : '▼';
+      };
+      list.appendChild(dh);
+      list.appendChild(body);
+    });
+  }
+  loadHist();
+
+  /* ---------- Save (local-first: works offline, sync optional) ---------- */
+  function saveExpense() {
+    var sel = document.getElementById('item').value;
+    var item = sel === 'custom' ? document.getElementById('customItem').value.trim() : sel;
+    var price = document.getElementById('price').value.trim();
+    if (!item) { showMsg('Please enter the item name! 📝', 'err'); return; }
+    if (!price || price <= 0) { showMsg('Please enter a valid amount! 💵', 'err'); return; }
+
+    // 1. Save on this device FIRST — always works, even without internet!
+    var h = getHist();
+    h.unshift({ item: item, price: price, date: getTodayStr() });
+    try { localStorage.setItem('lea_hist', JSON.stringify(h)); } catch (e) {}
+    loadHist();
+    document.getElementById('price').value = '';
+    document.getElementById('customItem').value = '';
+
+    // 2. Cloud backup ONLY if the user set their own webhook in Settings (public build has none)
+    var wh = getWebhook();
+    if (wh) {
+      var fullUrl = wh + '?item=' + encodeURIComponent(item) + '&price=' + encodeURIComponent(price);
+      fetch(fullUrl, { mode: 'no-cors' })
+        .then(function() { showMsg('✅ Saved! ☁️ Backed up to Sheets', 'ok'); })
+        .catch(function() { showMsg('✅ Saved on this device 📱', 'ok'); });
+    } else {
+      showMsg('✅ Saved on this device 📱', 'ok');
+    }
+  }
+  /* ---------- Export CSV ---------- */
+  function exportCSV() {
+    var h = getHist();
+    if (!h.length) { showMsg('Nothing to export yet!', 'err'); return; }
+    var csv = 'Date,Item,Amount (Rs)\n';
+    h.slice().reverse().forEach(function(x) {
+      csv += (x.date || '') + ',"' + String(x.item).replace(/"/g, '""') + '",' + x.price + '\n';
+    });
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'loona-expenses.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showMsg('📥 File downloaded! Open in Excel/Sheets', 'ok');
+  }
+
+  function showMsg(t, c) {
+    var m = document.getElementById('msg');
+    m.textContent = t; m.className = c;
+    setTimeout(function() { m.textContent = ''; }, 4000);
+  }
+
+  /* ---------- Calculator ---------- */
+  var cCur = '0', cPrev = null, cOp = null, cFresh = true;
+  function cRender() { document.getElementById('calcDisplay').textContent = cCur; }
+  function calcDigit(d) {
+    if (cFresh) { cCur = (d === '.') ? '0.' : d; cFresh = false; }
+    else {
+      if (d === '.' && cCur.indexOf('.') !== -1) return;
+      cCur = (cCur === '0' && d !== '.') ? d : cCur + d;
+    }
+    cRender();
+  }
+  function calcCompute(a, b, op) {
+    a = parseFloat(a); b = parseFloat(b);
+    if (op === '+') return a + b;
+    if (op === '−') return a - b;
+    if (op === '×') return a * b;
+    if (op === '÷') return b === 0 ? 'Error' : a / b;
+    return b;
+  }
+  function calcSetOp(op) {
+    if (cOp !== null && !cFresh) {
+      var r = calcCompute(cPrev, cCur, cOp);
+      cCur = String(Math.round(r * 100000000) / 100000000);
+      cRender();
+    }
+    cPrev = cCur;
+    cOp = op;
+    cFresh = true;
+  }
+  function calcEquals() {
+    if (cOp === null || cPrev === null) return;
+    var r = calcCompute(cPrev, cCur, cOp);
+    cCur = String(Math.round(r * 100000000) / 100000000);
+    cRender(); cOp = null; cPrev = null; cFresh = true;
+  }
+  function calcClear() { cCur = '0'; cPrev = null; cOp = null; cFresh = true; cRender(); }
+  function calcBack() {
+    if (cFresh) return;
+    cCur = cCur.length > 1 ? cCur.slice(0, -1) : '0';
+    cRender();
+  }
+  function calcUseGrand() {
+    cCur = String(getGrandTotal()); cFresh = true; cRender();
+    showMsg('📊 Grand total loaded into calculator', 'ok');
+  }
+
+  /* ---------- Settings ---------- */
+  function openSettings() {
+    document.getElementById('webhookInput').value = getWebhook();
+    document.getElementById('settingsModal').classList.add('open');
+  }
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('open');
+  }
+  function saveSettings() {
+    var u = document.getElementById('webhookInput').value.trim();
+    if (!u) { return; }
+    localStorage.setItem('lea_webhook', u);
+    closeSettings();
+    showMsg('⚙️ Settings saved!', 'ok');
+  }
+</script>
+</body>
+</html>
