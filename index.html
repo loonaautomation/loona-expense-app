@@ -5,137 +5,26 @@
  <meta name="google-site-verification" content="uDbJgI5DPiK6N7loTGyaAOwMrWXC7s-zAJwxzrXK74s" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Expense Tracker: Track Daily Expenses, Works Offline | Loona</title>
-<meta name="description" content="Simple one-click expense tracker that works offline: add expenses in seconds and see daily and grand totals. Free, no signup — data stays on your device.">
-<meta name="keywords" content="expense tracker, daily expense tracker, free expense tracker app, budget tracker, money tracker app">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
-    padding: 20px; color: #fff;
-  }
-  .card {
-    background: rgba(255,255,255,0.07); border-radius: 24px; padding: 28px 22px;
-    width: 100%; max-width: 400px; backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4); margin: 10px 0;
-  }
-  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  h1 { font-size: 22px; }
-  .gear {
-    background: rgba(255,255,255,0.1); border: none; border-radius: 50%;
-    width: 38px; height: 38px; font-size: 18px; cursor: pointer; color: #fff;
-    display: flex; align-items: center; justify-content: center; padding: 0;
-  }
-  .gear:active { transform: rotate(40deg); }
-  .sub { text-align: center; color: #aaa; font-size: 12px; margin-bottom: 22px; letter-spacing: 0.3px; }
-  label { display: block; font-size: 13px; margin-bottom: 6px; color: #ccc; font-weight: 600; }
-  select, input[type=text], input[type=number] {
-    width: 100%; padding: 13px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18);
-    background: rgba(255,255,255,0.09); color: #fff; font-size: 16px; margin-bottom: 16px;
-    outline: none;
-  }
-  select option { background: #1a1a2e; color: #fff; }
-  select:focus, input:focus { border-color: #4CAF50; }
-  .btn-main {
-    width: 100%; padding: 15px; border: none; border-radius: 14px;
-    background: linear-gradient(135deg, #4CAF50, #2E7D32);
-    color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
-    transition: transform 0.1s; margin-bottom: 6px;
-  }
-  .btn-main:active { transform: scale(0.97); }
-  .btn-main:disabled { opacity: 0.6; }
-  .btn-toggle {
-    width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px;
-    background: rgba(255,255,255,0.06); color: #fff; font-size: 14px; font-weight: 600;
-    cursor: pointer; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;
-  }
-  .btn-toggle:active { background: rgba(255,255,255,0.12); }
-  #msg { text-align: center; margin-top: 12px; font-size: 14px; min-height: 22px; }
-  .ok { color: #4CAF50; } .err { color: #f44336; }
-
-  /* Panels */
-  .panel { display: none; margin-top: 10px; padding: 16px; background: rgba(0,0,0,0.25);
-    border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); }
-  .panel.open { display: block; animation: fadeIn 0.2s; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  /* Calculator */
-  #calcDisplay {
-    background: rgba(0,0,0,0.4); border-radius: 10px; padding: 16px 14px;
-    font-size: 28px; text-align: right; margin-bottom: 12px; min-height: 62px;
-    overflow-x: auto; white-space: nowrap; font-weight: 300; letter-spacing: 1px;
-  }
-  .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .calc-grid button {
-    padding: 14px 0; border: none; border-radius: 10px; font-size: 18px; cursor: pointer;
-    background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; width: 100%;
-  }
-  .calc-grid button:active { background: rgba(255,255,255,0.22); }
-  .calc-grid button.op { background: rgba(255,152,0,0.25); color: #ffb74d; }
-  .calc-grid button.eq { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
-  .calc-grid button.clr { background: rgba(244,67,54,0.25); color: #ef9a9a; }
-  .calc-use {
-    width: 100%; margin-top: 10px; padding: 10px; border-radius: 10px; border: 1px dashed rgba(76,175,80,0.5);
-    background: transparent; color: #81c784; font-size: 13px; cursor: pointer; font-weight: 600;
-  }
-
-  /* Summary */
-  .sum-row { display: flex; justify-content: space-between; padding: 12px 4px;
-    border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 14px; }
-  .sum-row:last-child { border-bottom: none; }
-  .sum-row .val { font-weight: bold; }
-  .grand { font-size: 16px; }
-  .grand .val { color: #4CAF50; font-size: 20px; }
-
-  /* History */
-  .history { margin-top: 18px; }
-  .history h3 { font-size: 14px; color: #aaa; margin-bottom: 8px; }
-  .h-item { display: flex; justify-content: space-between; padding: 10px 12px;
-    background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
-  .date-header {
-    font-size: 13px; color: #ffca28; margin: 12px 0 6px; font-weight: bold;
-    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 12px; background: rgba(255,202,40,0.08); border-radius: 8px;
-    user-select: none; -webkit-tap-highlight-color: transparent;
-  }
-  .date-header:active { background: rgba(255,202,40,0.16); }
-  .arrow { font-size: 11px; }
-  .del-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 0 0 0 6px; }
-  .del-btn:active { transform: scale(1.3); }
-
-  /* Settings modal */
-  .modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6); z-index: 10; justify-content: center; align-items: center; padding: 20px; }
-  .modal-bg.open { display: flex; }
-  .modal { background: #1e1e3a; border-radius: 18px; padding: 24px; width: 100%; max-width: 360px;
-    border: 1px solid rgba(255,255,255,0.12); }
-  .modal h3 { margin-bottom: 6px; font-size: 17px; }
-  .modal p { font-size: 12px; color: #aaa; margin-bottom: 14px; line-height: 1.5; }
-  .modal .row { display: flex; gap: 8px; }
-  .modal .row .btn-main { margin-bottom: 0; }
-  .btn-ghost { padding: 15px 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.2);
-    background: transparent; color: #fff; cursor: pointer; font-size: 14px; }
-</style>
+<title>Finance Tracker: Free Expense Tracker, Budget Planner & Money Manager | Loona</title>
+<meta name="description" content="Free finance tracker and budget planner: track income and expenses, manage bills, debts and savings goals. No sign-up, works offline, data stays on your device.">
+<meta name="keywords" content="finance tracker, expense tracker, budget planner, money manager, daily expense tracker, free budget app, debt tracker, savings goal tracker">
 <link rel="canonical" href="https://loonaautomation.github.io/loona-expense-app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Loona Automation">
-<meta property="og:title" content="Free Expense Tracker: Track Daily Expenses, Works Offline | Loona">
-<meta property="og:description" content="Simple one-click expense tracker that works offline: add expenses in seconds and see daily and grand totals. Free, no signup — data stays on your device.">
+<meta property="og:title" content="Finance Tracker: Free Expense Tracker, Budget Planner & Money Manager | Loona">
+<meta property="og:description" content="Free finance tracker and budget planner: track income and expenses, manage bills, debts and savings goals. No sign-up, works offline, data stays on your device.">
 <meta property="og:url" content="https://loonaautomation.github.io/loona-expense-app/">
 <meta property="og:image" content="https://loonaautomation.github.io/loona-expense-app/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Free Expense Tracker: Track Daily Expenses, Works Offline | Loona">
-<meta name="twitter:description" content="Simple one-click expense tracker that works offline: add expenses in seconds and see daily and grand totals. Free, no signup — data stays on your device.">
+<meta name="twitter:title" content="Finance Tracker: Free Expense Tracker, Budget Planner & Money Manager | Loona">
+<meta name="twitter:description" content="Free finance tracker and budget planner: track income and expenses, manage bills, debts and savings goals. No sign-up, works offline, data stays on your device.">
 <meta name="twitter:image" content="https://loonaautomation.github.io/loona-expense-app/og-image.jpg">
 <meta name="theme-color" content="#062e2a">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Loona Expense App", "url": "https://loonaautomation.github.io/loona-expense-app/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "Loona Automation"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Loona Finance Tracker", "url": "https://loonaautomation.github.io/loona-expense-app/", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "featureList": "Expense and income tracking, budgets, recurring bills, debt tracking, savings goals, multiple accounts, CSV export", "publisher": {"@type": "Organization", "name": "Loona Automation", "url": "https://loonaautomation.github.io/"}}</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L43M13ZYT"></script>
 <script>
@@ -152,396 +41,1437 @@
  "@context": "https://schema.org",
  "@type": "FAQPage",
  "mainEntity": [
-  {
-   "@type": "Question",
-   "name": "Is the Loona Expense App free?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Yes. The Loona Expense App is completely free and needs no signup. Open the page and start adding expenses in one click."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Does it work without internet?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Yes. The app works fully offline, and your expenses stay saved on your own device, so you can track spending anywhere."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "What can I track with it?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Any daily expense \u2014 tea, food, transport, mobile recharge, groceries, medicine, fuel, clothing and more \u2014 with ready-made categories, a grand total, today's total and a full list of entries by date."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Can I export my expenses?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Yes. You can export your expenses as an Excel/CSV file whenever you want a copy or a report."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Do I need cloud backup?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "No. Cloud backup is optional and only for advanced users who want to copy their data to their own Google Sheet. The app works 100% without it."
-   }
-  }
+  {"@type": "Question", "name": "Is Loona Finance Tracker free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Loona Finance Tracker is completely free — expense and income tracking, budgets, bills, debts and savings goals are all included, with no sign-up and no subscription."}},
+  {"@type": "Question", "name": "Where is my financial data stored?", "acceptedAnswer": {"@type": "Answer", "text": "Only on your own device, in your browser's local storage. Nothing is uploaded to our servers, and there is no account, so your money data stays private. You can download a backup file any time from Reports."}},
+  {"@type": "Question", "name": "Does the finance tracker work offline?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. After the first visit the app works fully offline — add transactions, check budgets and view reports without any internet connection."}},
+  {"@type": "Question", "name": "Can I export my transactions?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. You can export all transactions as a CSV file that opens in Excel or Google Sheets, download a full JSON backup, and restore that backup later on any device."}},
+  {"@type": "Question", "name": "Do I need an account to use it?", "acceptedAnswer": {"@type": "Answer", "text": "No. There is no sign-up, no email and no password. Open the page and start tracking immediately."}},
+  {"@type": "Question", "name": "Which currencies does it support?", "acceptedAnswer": {"@type": "Answer", "text": "PKR (Pakistani Rupee) by default, plus USD, EUR, GBP, AED, SAR, KWD, INR and BDT. The currency setting changes the symbol and formatting of your amounts."}}
  ]
 }
 </script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #04231f 0%, #062e2a 55%, #0a453c 100%);
+    min-height: 100vh; color: #fff; padding: 14px 12px 0;
+  }
+  .appwrap { max-width: 520px; margin: 0 auto; }
+  .card {
+    background: rgba(255,255,255,0.06); border-radius: 22px; padding: 22px 18px;
+    backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .header { display: flex; justify-content: space-between; align-items: center; }
+  h1 { font-size: 21px; color: #ffd95e; }
+  .sub { text-align: center; color: #b9cfc9; font-size: 12px; margin: 4px 0 14px; letter-spacing: 0.3px; }
+  .gear {
+    background: rgba(255,255,255,0.1); border: none; border-radius: 50%;
+    width: 38px; height: 38px; font-size: 18px; cursor: pointer; color: #fff; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 10px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: none; padding: 8px 13px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06); color: #dcebe6; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .tab.active { background: linear-gradient(135deg, #d4af37, #b8912a); color: #062e2a; border-color: transparent; }
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.18s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  /* Quick add */
+  .qa { display: flex; gap: 8px; margin-bottom: 14px; }
+  .qa button {
+    flex: 1; padding: 13px 4px; border: none; border-radius: 13px; font-size: 14px; font-weight: 700; cursor: pointer; color: #fff;
+  }
+  .qa button:active { transform: scale(0.97); }
+  .qa .exp { background: linear-gradient(135deg, #e0524d, #b3352f); }
+  .qa .inc { background: linear-gradient(135deg, #2fae72, #1e7d52); }
+  .qa .trf { background: linear-gradient(135deg, #3d7ea6, #2a5a7a); }
+  /* Stat cards */
+  .balance-card {
+    background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.06));
+    border: 1px solid rgba(212,175,55,0.45); border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 12px;
+  }
+  .balance-card .lbl { font-size: 12px; color: #e8d9a0; letter-spacing: 1px; text-transform: uppercase; }
+  .balance-card .amt { font-size: 30px; font-weight: 800; color: #ffd95e; margin-top: 2px; }
+  .stats { display: flex; gap: 8px; margin-bottom: 14px; }
+  .stat { flex: 1; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 11px 8px; text-align: center; }
+  .stat .l { font-size: 11px; color: #a9c4bd; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .v { font-size: 16px; font-weight: 700; margin-top: 3px; }
+  .v-inc { color: #5fd598; } .v-exp { color: #ff9d97; } .v-net { color: #ffd95e; }
+  h2.sec { font-size: 15px; color: #ffd95e; margin: 16px 0 8px; }
+  h3.sec { font-size: 13px; color: #cfe3dd; margin: 12px 0 6px; }
+  canvas.chart { width: 100%; display: block; margin: 4px auto; }
+  .legend { font-size: 12px; color: #cfe3dd; }
+  .legend .row { display: flex; justify-content: space-between; padding: 4px 2px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+  /* Lists */
+  .item {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    padding: 10px 12px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 6px; font-size: 14px;
+  }
+  .item .t { font-weight: 600; }
+  .item .m { font-size: 11px; color: #a9c4bd; margin-top: 2px; }
+  .item .a { font-weight: 700; white-space: nowrap; }
+  .a-inc { color: #5fd598; } .a-exp { color: #ff9d97; } .a-trf { color: #8fc7e8; }
+  .icon-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 3px; color: #fff; }
+  .date-header {
+    font-size: 13px; color: #ffca28; margin: 12px 0 6px; font-weight: bold;
+    display: flex; justify-content: space-between; padding: 9px 12px;
+    background: rgba(255,202,40,0.08); border-radius: 8px;
+  }
+  .empty { color: #8fa8a1; font-size: 13px; text-align: center; padding: 12px 4px; }
+  /* Forms */
+  label { display: block; font-size: 13px; margin-bottom: 6px; color: #cfe3dd; font-weight: 600; }
+  select, input[type=text], input[type=number], input[type=date], input[type=search], textarea {
+    width: 100%; padding: 12px; border-radius: 11px; border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.09); color: #fff; font-size: 16px; margin-bottom: 13px; outline: none;
+  }
+  select option { background: #0a2e2a; color: #fff; }
+  select:focus, input:focus { border-color: #d4af37; }
+  input[type=date] { color-scheme: dark; }
+  .frow { display: flex; gap: 8px; }
+  .frow > div { flex: 1; }
+  .btn-main {
+    width: 100%; padding: 14px; border: none; border-radius: 13px;
+    background: linear-gradient(135deg, #d4af37, #b8912a); color: #062e2a;
+    font-size: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;
+  }
+  .btn-main:active { transform: scale(0.98); }
+  .btn-ghost {
+    padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.22);
+    background: transparent; color: #fff; cursor: pointer; font-size: 14px; font-weight: 600;
+  }
+  .btn-small {
+    padding: 9px 13px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.07); color: #fff; cursor: pointer; font-size: 13px; font-weight: 600; margin: 0 6px 8px 0;
+  }
+  .btn-danger { border-color: rgba(255,110,100,0.5); color: #ff9d97; }
+  #msg { text-align: center; margin-top: 8px; font-size: 14px; min-height: 20px; }
+  .ok { color: #5fd598; } .err { color: #ff8a80; }
+  /* Progress bars */
+  .bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.12); overflow: hidden; margin: 6px 0 4px; }
+  .bar > div { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #2fae72, #5fd598); transition: width 0.3s; }
+  .bar > div.warn { background: linear-gradient(90deg, #e8a13a, #ffca28); }
+  .bar > div.over { background: linear-gradient(90deg, #e0524d, #ff8a80); }
+  .bar > div.gold { background: linear-gradient(90deg, #b8912a, #ffd95e); }
+  .alert {
+    padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-bottom: 7px; line-height: 1.45;
+  }
+  .alert.warn { background: rgba(255,202,40,0.14); border: 1px solid rgba(255,202,40,0.4); color: #ffe9a8; }
+  .alert.over { background: rgba(224,82,77,0.16); border: 1px solid rgba(224,82,77,0.45); color: #ffc4c0; }
+  .alert.due { background: rgba(61,126,166,0.18); border: 1px solid rgba(61,126,166,0.5); color: #cdeafd; }
+  /* Modal */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 20;
+    justify-content: center; align-items: flex-start; padding: 18px 12px; overflow-y: auto; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #0b352f; border-radius: 18px; padding: 22px 18px; width: 100%; max-width: 420px;
+    border: 1px solid rgba(255,255,255,0.14); margin: auto 0; }
+  .modal h3 { margin-bottom: 12px; font-size: 17px; color: #ffd95e; }
+  .modal .row { display: flex; gap: 8px; margin-top: 4px; }
+  .modal .row .btn-main { margin-bottom: 0; }
+  .seg { display: flex; gap: 6px; margin-bottom: 14px; }
+  .seg button { flex: 1; padding: 10px 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05); color: #dcebe6; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .seg button.on-exp { background: #b3352f; border-color: transparent; color: #fff; }
+  .seg button.on-inc { background: #1e7d52; border-color: transparent; color: #fff; }
+  .seg button.on-trf { background: #2a5a7a; border-color: transparent; color: #fff; }
+  .amt-row { display: flex; gap: 8px; }
+  .amt-row input { flex: 1; }
+  .amt-row button { flex: none; height: 47px; width: 52px; border-radius: 11px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08); font-size: 19px; cursor: pointer; color: #fff; }
+  /* Calculator */
+  #calcDisplay { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 14px; font-size: 26px;
+    text-align: right; margin-bottom: 12px; min-height: 58px; overflow-x: auto; white-space: nowrap; font-weight: 300; }
+  .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .calc-grid button { padding: 13px 0; border: none; border-radius: 10px; font-size: 17px; cursor: pointer;
+    background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; }
+  .calc-grid button:active { background: rgba(255,255,255,0.22); }
+  .calc-grid button.op { background: rgba(212,175,55,0.25); color: #ffd95e; }
+  .calc-grid button.eq { background: linear-gradient(135deg, #d4af37, #b8912a); color: #062e2a; }
+  .calc-grid button.clr { background: rgba(224,82,77,0.25); color: #ff9d97; }
+  /* SEO content */
+  .seo { max-width: 860px; margin: 30px auto 0; }
+  .seo .inner { background: #fff; color: #1c2422; border-radius: 16px; padding: 24px 20px; border: 1px solid #e4dfcd; }
+  .seo h2 { color: #062e2a; margin: 0 0 10px; font-size: 20px; }
+  .seo h3 { color: #075e52; margin: 18px 0 6px; font-size: 16px; }
+  .seo p, .seo li { line-height: 1.65; font-size: 15px; }
+  .seo ul { padding-left: 20px; }
+  .seo .short { background: #f4f1e4; border-left: 4px solid #d4af37; padding: 12px 14px; border-radius: 8px; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .appwrap, .seo, #legalBar { display: none !important; }
+    #printReport { display: block !important; color: #000; font-family: Georgia, serif; padding: 20px; }
+  }
+  #printReport { display: none; }
+</style>
 </head>
 <body>
-<div class="card">
+<div class="appwrap">
+ <div class="card">
   <div class="header">
-    <h1>Loona Expense App — Free Expense Tracker</h1>
-    <button class="gear" onclick="openSettings()" title="Settings">⚙️</button>
+    <h1>💰 Loona Finance Tracker</h1>
+    <button class="gear" onclick="showView('settings')" title="Settings">⚙️</button>
   </div>
-  <p class="sub">Track expenses in one click — works offline, no signup needed!</p>
+  <p class="sub">Free expense tracker, budget planner &amp; money manager — no sign-up, works offline, data stays on your device.</p>
 
-  <label>🧾 What did you buy?</label>
-  <select id="item">
-    <option value="Tea">☕ Tea</option>
-    <option value="Samosa">🥟 Samosa</option>
-    <option value="Transport">🛺 Transport / Fare</option>
-    <option value="Snacks">🍔 Snacks / Fast Food</option>
-    <option value="Recharge">📱 Mobile Recharge</option>
-    <option value="Dairy">🥛 Dairy / Milk</option>
-    <option value="Groceries">🥬 Groceries</option>
-    <option value="Meat">🍗 Meat</option>
-    <option value="Clothing">👕 Clothing</option>
-    <option value="Medicine">💊 Medicine</option>
-    <option value="Fuel">⛽ Fuel</option>
-    <option value="custom">✏️ Other...</option>
-  </select>
-
-  <div id="customBox" style="display:none;">
-    <label>✏️ Enter item name:</label>
-    <input type="text" id="customItem" placeholder="e.g.: Biryani">
+  <div class="qa">
+    <button class="exp" onclick="openTxForm('expense')">− Expense</button>
+    <button class="inc" onclick="openTxForm('income')">+ Income</button>
+    <button class="trf" onclick="openTxForm('transfer')">⇄ Transfer</button>
   </div>
-
-  <label>💵 Amount (Rs)</label>
-  <input type="number" id="price" placeholder="e.g.: 50" min="1">
-
-  <button class="btn-main" id="saveBtn" onclick="saveExpense()">✅ Save Expense</button>
   <div id="msg"></div>
 
-  <button class="btn-toggle" onclick="togglePanel('calcPanel', this)">
-    <span>🧮 Calculator</span><span>▼</span>
-  </button>
-  <div class="panel" id="calcPanel">
-    <div id="calcDisplay">0</div>
-    <div class="calc-grid">
-      <button class="clr" onclick="calcClear()">C</button>
-      <button onclick="calcBack()">⌫</button>
-      <button class="op" onclick="calcSetOp('÷')">÷</button>
-      <button class="op" onclick="calcSetOp('×')">×</button>
-      <button onclick="calcDigit('7')">7</button>
-      <button onclick="calcDigit('8')">8</button>
-      <button onclick="calcDigit('9')">9</button>
-      <button class="op" onclick="calcSetOp('−')">−</button>
-      <button onclick="calcDigit('4')">4</button>
-      <button onclick="calcDigit('5')">5</button>
-      <button onclick="calcDigit('6')">6</button>
-      <button class="op" onclick="calcSetOp('+')">+</button>
-      <button onclick="calcDigit('1')">1</button>
-      <button onclick="calcDigit('2')">2</button>
-      <button onclick="calcDigit('3')">3</button>
-      <button class="eq" onclick="calcEquals()">=</button>
-      <button onclick="calcDigit('0')" style="grid-column: span 2;">0</button>
-      <button onclick="calcDigit('.')">.</button>
+  <div class="tabs" id="tabBar">
+    <button class="tab active" data-view="dashboard" onclick="showView('dashboard')">🏠 Dashboard</button>
+    <button class="tab" data-view="txns" onclick="showView('txns')">🧾 Transactions</button>
+    <button class="tab" data-view="accounts" onclick="showView('accounts')">🏦 Accounts</button>
+    <button class="tab" data-view="budgets" onclick="showView('budgets')">🎯 Budgets</button>
+    <button class="tab" data-view="bills" onclick="showView('bills')">🔁 Bills</button>
+    <button class="tab" data-view="debts" onclick="showView('debts')">🤝 Debts</button>
+    <button class="tab" data-view="goals" onclick="showView('goals')">🐷 Goals</button>
+    <button class="tab" data-view="reports" onclick="showView('reports')">📊 Reports</button>
+    <button class="tab" data-view="settings" onclick="showView('settings')">⚙️ Settings</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="balance-card"><div class="lbl">Total Balance — All Accounts</div><div class="amt" id="dBalance">—</div></div>
+    <div class="stats">
+      <div class="stat"><div class="l">Income · <span class="mname">This Month</span></div><div class="v v-inc" id="dInc">—</div></div>
+      <div class="stat"><div class="l">Expenses · <span class="mname">This Month</span></div><div class="v v-exp" id="dExp">—</div></div>
+      <div class="stat"><div class="l">Net</div><div class="v v-net" id="dNet">—</div></div>
     </div>
-    <button class="calc-use" onclick="calcUseGrand()">📊 Load Grand Total into calculator</button>
-  </div>
+    <div id="dDue"></div>
+    <div id="dAlerts"></div>
+    <h2 class="sec">📊 Spending by Category — <span class="mname">This Month</span></h2>
+    <canvas class="chart" id="donut" width="300" height="190"></canvas>
+    <div class="legend" id="donutLegend"></div>
+    <h2 class="sec">📈 Income vs Expenses — Last 6 Months</h2>
+    <canvas class="chart" id="bars" width="460" height="200"></canvas>
+    <h2 class="sec">🗓️ Upcoming Bills — Next 7 Days</h2>
+    <div id="dUpcoming"></div>
+    <h2 class="sec">🤝 Debts at a Glance</h2>
+    <div class="stats">
+      <div class="stat"><div class="l">Owed to You</div><div class="v v-inc" id="dOwedToYou">—</div></div>
+      <div class="stat"><div class="l">You Owe</div><div class="v v-exp" id="dYouOwe">—</div></div>
+    </div>
+  </section>
 
-  <button class="btn-toggle" onclick="togglePanel('sumPanel', this)">
-    <span>📊 Summary (tap to view)</span><span>▼</span>
-  </button>
-  <div class="panel" id="sumPanel">
-    <div class="sum-row grand"><span>💰 Grand Total</span><span class="val" id="grandTotal">Rs 0</span></div>
-    <div class="sum-row"><span>📅 Today's Total</span><span class="val" id="todayTotal">Rs 0</span></div>
-    <div class="sum-row"><span>🧾 Total Entries</span><span class="val" id="totalEntries">0</span></div>
-    <button class="calc-use" onclick="exportCSV()">📥 Export as Excel/CSV file</button>
-  </div>
+  <!-- TRANSACTIONS -->
+  <section class="view" id="view-txns">
+    <input type="search" id="fSearch" placeholder="🔍 Search title or category…" oninput="renderTxns()">
+    <div class="frow">
+      <div><label>Month</label><input type="month" id="fMonth" onchange="renderTxns()"></div>
+      <div><label>Type</label><select id="fType" onchange="renderTxns()">
+        <option value="all">All types</option><option value="expense">Expenses</option>
+        <option value="income">Income</option><option value="transfer">Transfers</option></select></div>
+    </div>
+    <div class="frow">
+      <div><label>Category</label><select id="fCategory" onchange="renderTxns()"></select></div>
+      <div><label>Account</label><select id="fAccount" onchange="renderTxns()"></select></div>
+    </div>
+    <div id="txnList"></div>
+  </section>
 
-  <div class="history">
-    <h3>📝 Expenses — by date</h3>
-    <div id="histList"></div>
-  </div>
+  <!-- ACCOUNTS -->
+  <section class="view" id="view-accounts">
+    <div id="acctList"></div>
+    <h3 class="sec">➕ Add Account</h3>
+    <label>Account name</label><input type="text" id="acName" placeholder="e.g.: Meezan Bank, Wallet">
+    <label>Opening balance</label><input type="number" id="acOpening" placeholder="0" step="any">
+    <button class="btn-main" onclick="addAccount()">Add Account</button>
+    <h3 class="sec">🏷️ Custom Categories</h3>
+    <div class="frow">
+      <div><label>For</label><select id="ccType"><option value="expense">Expenses</option><option value="income">Income</option></select></div>
+      <div><label>Emoji</label><input type="text" id="ccIcon" placeholder="🏷️" maxlength="4"></div>
+    </div>
+    <label>Category name</label><input type="text" id="ccName" placeholder="e.g.: Pets, Rent, Side Income">
+    <button class="btn-main" onclick="addCategory()">Add Category</button>
+    <div id="catList"></div>
+  </section>
+
+  <!-- BUDGETS -->
+  <section class="view" id="view-budgets">
+    <label>🌍 Overall monthly budget (all expenses)</label>
+    <div class="frow"><div><input type="number" id="bOverall" placeholder="0 = no limit" step="any"></div></div>
+    <button class="btn-main" onclick="saveOverallBudget()">Save Overall Budget</button>
+    <h2 class="sec">Category Budgets — <span class="mname">This Month</span></h2>
+    <div id="budgetList"></div>
+  </section>
+
+  <!-- BILLS / RECURRING -->
+  <section class="view" id="view-bills">
+    <div id="dueNow"></div>
+    <h2 class="sec">🔁 Recurring Rules</h2>
+    <div id="ruleList"></div>
+    <h3 class="sec">➕ Add Recurring Bill or Income</h3>
+    <div class="seg" id="ruleSeg">
+      <button type="button" class="on-exp" data-t="expense" onclick="ruleTypeSet('expense')">Expense</button>
+      <button type="button" data-t="income" onclick="ruleTypeSet('income')">Income</button>
+    </div>
+    <label>Title</label><input type="text" id="rTitle" placeholder="e.g.: Electricity bill, Salary">
+    <label>Amount</label><input type="number" id="rAmount" placeholder="0" step="any">
+    <div class="frow">
+      <div><label>Category</label><select id="rCategory"></select></div>
+      <div><label>Account</label><select id="rAccount"></select></div>
+    </div>
+    <div class="frow">
+      <div><label>Repeats</label><select id="rFreq"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select></div>
+      <div><label>Next due date</label><input type="date" id="rNext"></div>
+    </div>
+    <button class="btn-main" onclick="addRule()">Add Recurring Rule</button>
+  </section>
+
+  <!-- DEBTS -->
+  <section class="view" id="view-debts">
+    <div class="stats">
+      <div class="stat"><div class="l">Owed to You</div><div class="v v-inc" id="debtToYou">—</div></div>
+      <div class="stat"><div class="l">You Owe</div><div class="v v-exp" id="debtYouOwe">—</div></div>
+    </div>
+    <div id="debtList"></div>
+    <h3 class="sec">➕ Add Debt Record</h3>
+    <div class="seg" id="debtSeg">
+      <button type="button" class="on-inc" data-t="lent" onclick="debtDirSet('lent')">I Lent Money</button>
+      <button type="button" data-t="borrowed" onclick="debtDirSet('borrowed')">I Borrowed</button>
+    </div>
+    <label>Person</label><input type="text" id="dbPerson" placeholder="e.g.: Ahmed">
+    <label>Amount</label><input type="number" id="dbAmount" placeholder="0" step="any">
+    <div class="frow">
+      <div><label>Date</label><input type="date" id="dbDate"></div>
+      <div><label>Due date (optional)</label><input type="date" id="dbDue"></div>
+    </div>
+    <label>Note (optional)</label><input type="text" id="dbNote" placeholder="e.g.: For bike repair">
+    <button class="btn-main" onclick="addDebt()">Add Debt Record</button>
+  </section>
+
+  <!-- GOALS -->
+  <section class="view" id="view-goals">
+    <div id="goalList"></div>
+    <h3 class="sec">➕ Add Savings Goal</h3>
+    <label>Goal name</label><input type="text" id="gName" placeholder="e.g.: New phone, Hajj fund, Emergency fund">
+    <div class="frow">
+      <div><label>Target amount</label><input type="number" id="gTarget" placeholder="0" step="any"></div>
+      <div><label>Target date (optional)</label><input type="date" id="gDate"></div>
+    </div>
+    <button class="btn-main" onclick="addGoal()">Add Goal</button>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="view" id="view-reports">
+    <label>📅 Report month</label><input type="month" id="repMonth" onchange="renderReports()">
+    <div id="repBody"></div>
+    <h3 class="sec">💾 Export &amp; Backup</h3>
+    <button class="btn-small" onclick="exportCSV()">📥 Export CSV (all transactions)</button>
+    <button class="btn-small" onclick="exportBackup()">🧰 Download Backup (JSON)</button>
+    <button class="btn-small" onclick="document.getElementById('restoreFile').click()">♻️ Restore Backup (JSON)</button>
+    <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)">
+    <button class="btn-small" onclick="printReport()">🖨️ Print Monthly Report</button>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="view-settings">
+    <label>💱 Currency</label>
+    <select id="sCurrency" onchange="saveCurrency()">
+      <option value="PKR">PKR — Pakistani Rupee (Rs)</option>
+      <option value="USD">USD — US Dollar ($)</option>
+      <option value="EUR">EUR — Euro (€)</option>
+      <option value="GBP">GBP — British Pound (£)</option>
+      <option value="AED">AED — UAE Dirham</option>
+      <option value="SAR">SAR — Saudi Riyal</option>
+      <option value="KWD">KWD — Kuwaiti Dinar</option>
+      <option value="INR">INR — Indian Rupee (₹)</option>
+      <option value="BDT">BDT — Bangladeshi Taka (৳)</option>
+    </select>
+    <p style="font-size:12px;color:#a9c4bd;line-height:1.5;margin-bottom:14px">Currency only changes the symbol and formatting of your amounts — amounts are never converted.</p>
+    <label>☁️ Optional backup webhook URL (advanced)</label>
+    <input type="text" id="sWebhook" placeholder="https://hook… (leave empty to disable)">
+    <p style="font-size:12px;color:#a9c4bd;line-height:1.5;margin-bottom:14px">Optional: if set, each new transaction is also sent as JSON to your own webhook (for example your Make.com scenario or Google Sheet bridge). The app works 100% without it.</p>
+    <button class="btn-main" onclick="saveWebhook()">Save Webhook</button>
+    <h3 class="sec">🧹 Danger Zone</h3>
+    <button class="btn-small btn-danger" onclick="eraseAll()">🗑️ Erase All Data</button>
+    <p style="font-size:12px;color:#a9c4bd;line-height:1.5">Erases all Finance Tracker data stored on this device. Your old Loona Expense App history is not touched. Download a backup first if you may need it.</p>
+  </section>
+ </div>
 </div>
 
-<div class="modal-bg" id="settingsModal" onclick="if(event.target===this)closeSettings()">
-  <div class="modal">
-    <h3>⚙️ Settings</h3>
-    <p><b>Optional</b> cloud backup. The app works 100% without this — your data stays on your device. If you want automatic backup to your own Google Sheet, paste your Make.com webhook URL here (advanced users).</p>
-    <label>Webhook URL</label>
-    <input type="text" id="webhookInput" placeholder="https://hook.eu1.make.com/...">
-    <div class="row">
-      <button class="btn-main" onclick="saveSettings()">Save</button>
-      <button class="btn-ghost" onclick="closeSettings()">Close</button>
-    </div>
+<!-- Transaction form modal -->
+<div class="modal-bg" id="txModal">
+ <div class="modal">
+  <h3 id="txModalTitle">Add Expense</h3>
+  <div class="seg" id="txSeg">
+    <button type="button" data-t="expense" onclick="txTypeSet('expense')">Expense</button>
+    <button type="button" data-t="income" onclick="txTypeSet('income')">Income</button>
+    <button type="button" data-t="transfer" onclick="txTypeSet('transfer')">Transfer</button>
   </div>
+  <label>Amount</label>
+  <div class="amt-row"><input type="number" id="txAmount" placeholder="0" step="any"><button type="button" onclick="openCalc()" title="Calculator">🧮</button></div>
+  <label>Title / note</label><input type="text" id="txTitle" placeholder="e.g.: Groceries, Salary, Fuel">
+  <div id="txCatRow"><label>Category</label><select id="txCategory"></select></div>
+  <div id="txAcctRow"><label>Account</label><select id="txAccount"></select></div>
+  <div id="txFromRow" style="display:none"><label>From account</label><select id="txFrom"></select></div>
+  <div id="txToRow" style="display:none"><label>To account</label><select id="txTo"></select></div>
+  <label>Date</label><input type="date" id="txDate">
+  <div class="row">
+    <button class="btn-main" onclick="saveTx()">Save</button>
+    <button class="btn-ghost" onclick="closeModal('txModal')">Cancel</button>
+  </div>
+ </div>
+</div>
+
+<!-- Calculator modal -->
+<div class="modal-bg" id="calcModal">
+ <div class="modal">
+  <h3>🧮 Calculator</h3>
+  <div id="calcDisplay">0</div>
+  <div class="calc-grid">
+    <button class="clr" onclick="calcClear()">C</button>
+    <button onclick="calcBack()">⌫</button>
+    <button class="op" onclick="calcSetOp('÷')">÷</button>
+    <button class="op" onclick="calcSetOp('×')">×</button>
+    <button onclick="calcDigit('7')">7</button><button onclick="calcDigit('8')">8</button><button onclick="calcDigit('9')">9</button>
+    <button class="op" onclick="calcSetOp('−')">−</button>
+    <button onclick="calcDigit('4')">4</button><button onclick="calcDigit('5')">5</button><button onclick="calcDigit('6')">6</button>
+    <button class="op" onclick="calcSetOp('+')">+</button>
+    <button onclick="calcDigit('1')">1</button><button onclick="calcDigit('2')">2</button><button onclick="calcDigit('3')">3</button>
+    <button class="eq" onclick="calcEquals()">=</button>
+    <button onclick="calcDigit('0')" style="grid-column: span 2;">0</button>
+    <button onclick="calcDigit('.')">.</button>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <button class="btn-main" onclick="calcUse()">Use This Amount</button>
+    <button class="btn-ghost" onclick="closeModal('calcModal')">Close</button>
+  </div>
+ </div>
+</div>
+
+<!-- Small prompt modal (payments / contributions / budget edit) -->
+<div class="modal-bg" id="miniModal">
+ <div class="modal">
+  <h3 id="miniTitle">Amount</h3>
+  <label id="miniLabel">Amount</label><input type="number" id="miniAmount" placeholder="0" step="any">
+  <div class="row">
+    <button class="btn-main" onclick="miniSave()">Save</button>
+    <button class="btn-ghost" onclick="closeModal('miniModal')">Cancel</button>
+  </div>
+ </div>
+</div>
+
+<div id="printReport"></div>
+
+<section class="seo">
+ <div class="inner">
+  <h2>About Loona Finance Tracker</h2>
+  <p class="short"><strong>In short:</strong> Loona Finance Tracker is a free online finance tracker, expense tracker and budget planner that helps you record income and expenses, follow monthly budgets, manage recurring bills, track debts and grow savings goals. It needs no sign-up, works offline, and keeps all of your data on your own device.</p>
+  <h3>Features</h3>
+  <ul>
+    <li><strong>Dashboard at a glance</strong> — total balance, this month's income, expenses and net, a spending-by-category chart and an income-vs-expenses chart for the last 6 months.</li>
+    <li><strong>Fast transactions</strong> — add income or an expense in seconds, with a built-in calculator in the amount field, plus edit, delete, search and filters by month, type, category and account.</li>
+    <li><strong>Multiple accounts</strong> — Cash, Bank, JazzCash and EasyPaisa ready out of the box, plus your own custom accounts, with transfers between them.</li>
+    <li><strong>Budgets that warn you</strong> — an overall monthly budget and per-category budgets with progress bars that turn amber at 80% and red when you pass the limit.</li>
+    <li><strong>Bills &amp; recurring items</strong> — weekly, monthly or yearly rules for rent, utility bills and salary; due items appear on your dashboard ready to post with one tap.</li>
+    <li><strong>Debt tracker</strong> — money you lent or borrowed, with partial payments and remaining balances.</li>
+    <li><strong>Savings goals</strong> — set a target, add contributions and watch the progress bar fill up.</li>
+    <li><strong>Reports &amp; export</strong> — monthly summaries, top expenses, CSV export, full JSON backup and restore, and a print-friendly monthly report.</li>
+    <li><strong>Private by design</strong> — no account and no server copy of your data; everything lives in your browser on your device. Your old Loona Expense App entries are imported automatically.</li>
+  </ul>
+  <h3>How it works</h3>
+  <p><strong>1. Add your money.</strong> Tap − Expense, + Income or ⇄ Transfer, enter the amount (use the built-in calculator if you like), pick a category and account, and save. <strong>2. Set your budgets.</strong> Add an overall monthly limit and per-category budgets so the app can warn you before you overspend. <strong>3. Review and improve.</strong> Check the dashboard charts, post due bills with one tap, and export a monthly report to see exactly where your money went.</p>
+  <h3>Frequently Asked Questions</h3>
+  <h3>Is Loona Finance Tracker free?</h3>
+  <p>Yes. Loona Finance Tracker is completely free — expense and income tracking, budgets, bills, debts and savings goals are all included, with no sign-up and no subscription.</p>
+  <h3>Where is my financial data stored?</h3>
+  <p>Only on your own device, in your browser's local storage. Nothing is uploaded to our servers, and there is no account, so your money data stays private. You can download a backup file any time from Reports.</p>
+  <h3>Does the finance tracker work offline?</h3>
+  <p>Yes. After the first visit the app works fully offline — add transactions, check budgets and view reports without any internet connection.</p>
+  <h3>Can I export my transactions?</h3>
+  <p>Yes. You can export all transactions as a CSV file that opens in Excel or Google Sheets, download a full JSON backup, and restore that backup later on any device.</p>
+  <h3>Do I need an account to use it?</h3>
+  <p>No. There is no sign-up, no email and no password. Open the page and start tracking immediately.</p>
+  <h3>Which currencies does it support?</h3>
+  <p>PKR (Pakistani Rupee) by default, plus USD, EUR, GBP, AED, SAR, KWD, INR and BDT. The currency setting changes the symbol and formatting of your amounts.</p>
+ </div>
+</section>
+
+<div id="legalBar" style="background:#062e2a;color:#f3e9c8;text-align:center;padding:14px 12px;font:14px/1.6 system-ui,sans-serif;border-top:3px solid #d4af37;margin:24px -12px 0">
+© 2026 Loona Automation · Contact: <a href="mailto:loonaautomation@gmail.com" style="color:#ffd95e">loonaautomation@gmail.com</a><br>
+<a href="index.html" style="color:#ffd95e;margin:0 8px">Home</a>·<a href="about.html" style="color:#ffd95e;margin:0 8px">About</a>·<a href="contact.html" style="color:#ffd95e;margin:0 8px">Contact</a>·<a href="privacy-policy.html" style="color:#ffd95e;margin:0 8px">Privacy Policy</a>·<a href="https://loonaautomation.github.io/" style="color:#ffd95e;margin:0 8px">Loona Automation — All Tools</a>
 </div>
 
 <script>
-  var DEFAULT_WEBHOOK = ''; // PUBLIC BUILD: no webhook baked in (set your own in Settings)
-  function getWebhook() {
-    return localStorage.getItem('lea_webhook') || DEFAULT_WEBHOOK;
+/* ==== LFT CORE (pure logic — no DOM) ==== */
+var LFT = (function () {
+  var STORE_KEY = 'lft_data_v1';
+  var OLD_KEY = 'lea_hist';
+  var WEBHOOK_KEY = 'lea_webhook';
+  var _uid = 0;
+  function uid() { _uid += 1; return 'id' + Date.now().toString(36) + _uid.toString(36) + Math.floor(Math.random() * 1e6).toString(36); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function fmtDate(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function todayStr(now) { return fmtDate(now || new Date()); }
+  function monthKey(dstr) { return String(dstr || '').slice(0, 7); }
+  function num(x) { var n = parseFloat(x); return isNaN(n) ? 0 : n; }
+
+  var EXPENSE_CATS = [
+    { name: 'Food & Drink', icon: '🍔' }, { name: 'Transport', icon: '🛺' },
+    { name: 'Bills & Utilities', icon: '💡' }, { name: 'Shopping', icon: '🛍️' },
+    { name: 'Health', icon: '💊' }, { name: 'Education', icon: '📚' },
+    { name: 'Entertainment', icon: '🎬' }, { name: 'Family', icon: '👨‍👩‍👧' },
+    { name: 'Other', icon: '📦' }
+  ];
+  var INCOME_CATS = [
+    { name: 'Salary', icon: '💼' }, { name: 'Business', icon: '🏪' },
+    { name: 'Freelance', icon: '💻' }, { name: 'Gifts', icon: '🎁' },
+    { name: 'Other', icon: '📦' }
+  ];
+
+  function defaultData() {
+    return {
+      version: 1, migrated: false,
+      accounts: [
+        { id: 'cash', name: 'Cash', opening: 0 },
+        { id: 'bank', name: 'Bank', opening: 0 },
+        { id: 'jazzcash', name: 'JazzCash', opening: 0 },
+        { id: 'easypaisa', name: 'EasyPaisa', opening: 0 }
+      ],
+      categories: { expense: EXPENSE_CATS.slice(), income: INCOME_CATS.slice() },
+      transactions: [],
+      budgets: { overall: 0, per: {} },
+      recurring: [],
+      debts: [],
+      goals: [],
+      settings: { currency: 'PKR' }
+    };
   }
 
-  document.getElementById('item').addEventListener('change', function() {
-    document.getElementById('customBox').style.display =
-      this.value === 'custom' ? 'block' : 'none';
-  });
-
-  function togglePanel(id, btn) {
-    var p = document.getElementById(id);
-    var open = p.classList.toggle('open');
-    btn.querySelector('span:last-child').textContent = open ? '▲' : '▼';
-    if (id === 'sumPanel' && open) updateSummary();
+  /* Convert an old-app date "DD/MM/YYYY" to "YYYY-MM-DD"; fallback = fallbackStr. */
+  function oldDateToISO(s, fallbackStr) {
+    if (!s) return fallbackStr;
+    var p = String(s).split('/');
+    if (p.length === 3) {
+      var d = parseInt(p[0], 10), m = parseInt(p[1], 10), y = parseInt(p[2], 10);
+      if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y > 1970) return y + '-' + pad(m) + '-' + pad(d);
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    return fallbackStr;
   }
 
-  function getTodayStr() {
-    var n = new Date();
-    return String(n.getDate()).padStart(2,'0') + '/' +
-           String(n.getMonth()+1).padStart(2,'0') + '/' + n.getFullYear();
-  }
-  function escHtml(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-  function getHist() {
-    return JSON.parse(localStorage.getItem('lea_hist') || '[]');
-  }
-
-  /* ---------- Summary ---------- */
-  function updateSummary() {
-    var h = getHist();
-    var grand = 0, today = 0;
-    var ts = getTodayStr();
-    h.forEach(function(x) {
-      var p = parseInt(x.price) || 0;
-      grand += p;
-      if (x.date === ts) today += p;
+  /* Migration: if the new store is absent and lea_hist has entries, import them.
+     lea_hist is only read — never modified or deleted. */
+  function migrateIfNeeded(storage, today) {
+    var existing = null;
+    try { existing = storage.getItem(STORE_KEY); } catch (e) {}
+    if (existing) return null;
+    var raw = null;
+    try { raw = storage.getItem(OLD_KEY); } catch (e) {}
+    if (!raw) return null;
+    var hist;
+    try { hist = JSON.parse(raw); } catch (e) { return null; }
+    if (!hist || !hist.length) return null;
+    var data = defaultData();
+    var cash = data.accounts[0];
+    hist.forEach(function (x) {
+      data.transactions.push({
+        id: uid(), type: 'expense',
+        title: String(x.item || 'Expense'),
+        amount: num(x.price),
+        category: 'Other', accountId: cash.id, toAccountId: null,
+        date: oldDateToISO(x.date, today)
+      });
     });
-    document.getElementById('grandTotal').textContent = 'Rs ' + grand;
-    document.getElementById('todayTotal').textContent = 'Rs ' + today;
-    document.getElementById('totalEntries').textContent = h.length;
+    data.migrated = true;
+    return data;
   }
-  function getGrandTotal() {
+
+  function loadData(storage, today) {
+    var raw = null;
+    try { raw = storage.getItem(STORE_KEY); } catch (e) {}
+    if (raw) {
+      try {
+        var d = JSON.parse(raw);
+        if (d && d.accounts && d.transactions) return d;
+      } catch (e) {}
+    }
+    var migrated = migrateIfNeeded(storage, today);
+    if (migrated) { saveData(storage, migrated); return migrated; }
+    return defaultData();
+  }
+  function saveData(storage, data) {
+    try { storage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function findAccount(data, id) {
+    for (var i = 0; i < data.accounts.length; i++) if (data.accounts[i].id === id) return data.accounts[i];
+    return null;
+  }
+  function accountBalance(data, accountId) {
+    var a = findAccount(data, accountId);
+    var bal = a ? num(a.opening) : 0;
+    data.transactions.forEach(function (t) {
+      if (t.type === 'income' && t.accountId === accountId) bal += num(t.amount);
+      else if (t.type === 'expense' && t.accountId === accountId) bal -= num(t.amount);
+      else if (t.type === 'transfer') {
+        if (t.accountId === accountId) bal -= num(t.amount);
+        if (t.toAccountId === accountId) bal += num(t.amount);
+      }
+    });
+    return bal;
+  }
+  function totalBalance(data) {
     var t = 0;
-    getHist().forEach(function(x) { t += parseInt(x.price) || 0; });
+    data.accounts.forEach(function (a) { t += accountBalance(data, a.id); });
     return t;
   }
-
-  /* ---------- History (collapsible by date) ---------- */
-  function loadHist() {
-    var h = getHist();
-    var list = document.getElementById('histList');
-    list.innerHTML = '';
-
-    var byDate = {};
-    h.forEach(function(x, i) {
-      var d = x.date || 'Older entries';
-      if (!byDate[d]) byDate[d] = [];
-      x._i = i;
-      byDate[d].push(x);
+  function monthTotals(data, mk) {
+    var inc = 0, exp = 0;
+    data.transactions.forEach(function (t) {
+      if (monthKey(t.date) !== mk) return;
+      if (t.type === 'income') inc += num(t.amount);
+      else if (t.type === 'expense') exp += num(t.amount);
     });
-
-    var dates = Object.keys(byDate).sort(function(a, b) {
-      if (a === 'Older entries') return 1;
-      if (b === 'Older entries') return -1;
-      var pa = a.split('/'), pb = b.split('/');
-      return new Date(pb[2], pb[1]-1, pb[0]) - new Date(pa[2], pa[1]-1, pa[0]);
+    return { income: inc, expense: exp, net: inc - exp };
+  }
+  function categoryTotals(data, mk, type) {
+    var map = {}, order = [];
+    data.transactions.forEach(function (t) {
+      if (t.type !== type || monthKey(t.date) !== mk) return;
+      var c = t.category || 'Other';
+      if (!(c in map)) { map[c] = 0; order.push(c); }
+      map[c] += num(t.amount);
     });
-
-    if (!dates.length) {
-      list.innerHTML = '<p style="color:#777;font-size:13px;text-align:center;">Nothing saved yet</p>';
-      return;
-    }
-
-    var todayStr = getTodayStr();
-    dates.forEach(function(d, idx) {
-      var items = byDate[d], total = 0;
-      var dh = document.createElement('div');
-      dh.className = 'date-header';
-      dh.innerHTML = '<span>' + (d === todayStr ? '📅 Today (' + d + ')' : '📅 ' + d) +
-                     '</span><span class="arrow">' + (idx === 0 ? '▲' : '▼') + '</span>';
-      var body = document.createElement('div');
-      if (idx !== 0) body.style.display = 'none';
-
-      items.forEach(function(x) {
-        total += parseInt(x.price) || 0;
-        var div = document.createElement('div');
-        div.className = 'h-item';
-        div.innerHTML = '<span>' + escHtml(x.item) + '</span><span>Rs ' + x.price +
-          ' <button class="del-btn" onclick="delEntry(' + x._i + ')" title="Delete">🗑️</button></span>';
-        body.appendChild(div);
-      });
-
-      var t = document.createElement('div');
-      t.className = 'h-item';
-      t.style.background = 'rgba(76,175,80,0.2)';
-      t.style.fontWeight = 'bold';
-      t.innerHTML = '<span>📊 Day Total</span><span>Rs ' + total + '</span>';
-      body.appendChild(t);
-
-      dh.onclick = function() {
-        var hidden = body.style.display === 'none';
-        body.style.display = hidden ? 'block' : 'none';
-        dh.querySelector('.arrow').textContent = hidden ? '▲' : '▼';
-      };
-      list.appendChild(dh);
-      list.appendChild(body);
+    return order.map(function (c) { return { category: c, total: map[c] }; })
+      .sort(function (a, b) { return b.total - a.total; });
+  }
+  function budgetStatus(limit, spent) {
+    limit = num(limit); spent = num(spent);
+    if (limit <= 0) return { limit: 0, spent: spent, pct: 0, state: 'none', remaining: 0 };
+    var pct = Math.round((spent / limit) * 1000) / 10;
+    return { limit: limit, spent: spent, pct: pct, remaining: limit - spent,
+      state: pct >= 100 ? 'over' : (pct >= 80 ? 'warn' : 'ok') };
+  }
+  function monthlyBudgets(data, mk) {
+    var exp = monthTotals(data, mk).expense;
+    var list = [{ key: '__overall', label: 'Overall', st: budgetStatus(data.budgets.overall, exp) }];
+    var cats = categoryTotals(data, mk, 'expense');
+    var spentBy = {};
+    cats.forEach(function (c) { spentBy[c.category] = c.total; });
+    Object.keys(data.budgets.per || {}).forEach(function (cat) {
+      list.push({ key: cat, label: cat, st: budgetStatus(data.budgets.per[cat], spentBy[cat] || 0) });
     });
+    return list;
   }
-  loadHist();
-
-  /* ---------- Save (local-first: works offline, sync optional) ---------- */
-  function saveExpense() {
-    var sel = document.getElementById('item').value;
-    var item = sel === 'custom' ? document.getElementById('customItem').value.trim() : sel;
-    var price = document.getElementById('price').value.trim();
-    if (!item) { showMsg('Please enter the item name! 📝', 'err'); return; }
-    if (!price || price <= 0) { showMsg('Please enter a valid amount! 💵', 'err'); return; }
-
-    // 1. Save on this device FIRST — always works, even without internet!
-    var h = getHist();
-    h.unshift({ item: item, price: price, date: getTodayStr() });
-    try { localStorage.setItem('lea_hist', JSON.stringify(h)); } catch (e) {}
-    loadHist();
-    document.getElementById('price').value = '';
-    document.getElementById('customItem').value = '';
-
-    // 2. Cloud backup ONLY if the user set their own webhook in Settings (public build has none)
-    var wh = getWebhook();
-    if (wh) {
-      var fullUrl = wh + '?item=' + encodeURIComponent(item) + '&price=' + encodeURIComponent(price);
-      fetch(fullUrl, { mode: 'no-cors' })
-        .then(function() { showMsg('✅ Saved! ☁️ Backed up to Sheets', 'ok'); })
-        .catch(function() { showMsg('✅ Saved on this device 📱', 'ok'); });
-    } else {
-      showMsg('✅ Saved on this device 📱', 'ok');
+  /* Advance a due date by one period. Monthly/yearly clamp the day to the
+     target month's last day (e.g. Jan 31 -> Feb 28). */
+  function nextDue(dstr, freq) {
+    var p = String(dstr).split('-');
+    var y = +p[0], m = +p[1], d = +p[2];
+    var dt = new Date(y, m - 1, d);
+    if (freq === 'weekly') { dt.setDate(dt.getDate() + 7); return fmtDate(dt); }
+    if (freq === 'monthly') {
+      var nm = m + 1, ny = y;
+      if (nm > 12) { nm = 1; ny += 1; }
+      var last = new Date(ny, nm, 0).getDate();
+      return fmtDate(new Date(ny, nm - 1, Math.min(d, last)));
     }
+    if (freq === 'yearly') {
+      var lastY = new Date(y + 1, m, 0).getDate();
+      return fmtDate(new Date(y + 1, m - 1, Math.min(d, lastY)));
+    }
+    return dstr;
   }
-  /* ---------- Export CSV ---------- */
-  function exportCSV() {
-    var h = getHist();
-    if (!h.length) { showMsg('Nothing to export yet!', 'err'); return; }
-    var csv = 'Date,Item,Amount (Rs)\n';
-    h.slice().reverse().forEach(function(x) {
-      csv += (x.date || '') + ',"' + String(x.item).replace(/"/g, '""') + '",' + x.price + '\n';
+  function postRecurring(data, ruleId, today) {
+    for (var i = 0; i < data.recurring.length; i++) {
+      var r = data.recurring[i];
+      if (r.id !== ruleId) continue;
+      var tx = { id: uid(), type: r.type, title: r.title, amount: num(r.amount),
+        category: r.category, accountId: r.accountId, toAccountId: null, date: today };
+      data.transactions.unshift(tx);
+      r.nextDue = nextDue(r.nextDue, r.freq);
+      return tx;
+    }
+    return null;
+  }
+  function debtPaid(debt) {
+    var s = 0;
+    (debt.payments || []).forEach(function (p) { s += num(p.amount); });
+    return s;
+  }
+  function debtRemaining(debt) { return Math.max(0, num(debt.amount) - debtPaid(debt)); }
+  function debtTotals(data) {
+    var toYou = 0, youOwe = 0;
+    data.debts.forEach(function (d) {
+      var rem = debtRemaining(d);
+      if (d.direction === 'lent') toYou += rem; else youOwe += rem;
     });
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'loona-expenses.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showMsg('📥 File downloaded! Open in Excel/Sheets', 'ok');
+    return { toYou: toYou, youOwe: youOwe };
   }
-
-  /* ---------- Delete entry ---------- */
-  function delEntry(i) {
-    if (!confirm('Delete this entry?')) return;
-    var h = getHist();
-    h.splice(i, 1);
-    try { localStorage.setItem('lea_hist', JSON.stringify(h)); } catch (e) {}
-    loadHist();
-    if (document.getElementById('sumPanel').classList.contains('open')) updateSummary();
+  function goalProgress(goal) {
+    var target = num(goal.target);
+    if (target <= 0) return 0;
+    return Math.round((num(goal.saved) / target) * 1000) / 10;
   }
-
-  function showMsg(t, c) {
-    var m = document.getElementById('msg');
-    m.textContent = t; m.className = c;
-    setTimeout(function() { m.textContent = ''; }, 4000);
-  }
-
-  /* ---------- Calculator ---------- */
-  var cCur = '0', cPrev = null, cOp = null, cFresh = true;
-  function cRender() { document.getElementById('calcDisplay').textContent = cCur; }
-  function calcDigit(d) {
-    if (cFresh) { cCur = (d === '.') ? '0.' : d; cFresh = false; }
-    else {
-      if (d === '.' && cCur.indexOf('.') !== -1) return;
-      cCur = (cCur === '0' && d !== '.') ? d : cCur + d;
+  function sixMonthSeries(data, now) {
+    var out = [];
+    var base = new Date(now.getFullYear(), now.getMonth(), 1);
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+      var mk = d.getFullYear() + '-' + pad(d.getMonth() + 1);
+      var t = monthTotals(data, mk);
+      out.push({ key: mk, income: t.income, expense: t.expense });
     }
-    cRender();
+    return out;
   }
-  function calcCompute(a, b, op) {
-    a = parseFloat(a); b = parseFloat(b);
-    if (op === '+') return a + b;
-    if (op === '−') return a - b;
-    if (op === '×') return a * b;
-    if (op === '÷') return b === 0 ? 'Error' : a / b;
-    return b;
+  function topExpenses(data, mk, n) {
+    return data.transactions
+      .filter(function (t) { return t.type === 'expense' && monthKey(t.date) === mk; })
+      .slice().sort(function (a, b) { return num(b.amount) - num(a.amount); })
+      .slice(0, n || 5);
   }
-  function calcSetOp(op) {
-    if (cOp !== null && !cFresh) {
-      var r = calcCompute(cPrev, cCur, cOp);
-      cCur = String(Math.round(r * 100000000) / 100000000);
-      cRender();
-    }
-    cPrev = cCur;
-    cOp = op;
-    cFresh = true;
+  function csvEscape(s) {
+    s = String(s == null ? '' : s);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   }
-  function calcEquals() {
-    if (cOp === null || cPrev === null) return;
-    var r = calcCompute(cPrev, cCur, cOp);
-    cCur = String(Math.round(r * 100000000) / 100000000);
-    cRender(); cOp = null; cPrev = null; cFresh = true;
-  }
-  function calcClear() { cCur = '0'; cPrev = null; cOp = null; cFresh = true; cRender(); }
-  function calcBack() {
-    if (cFresh) return;
-    cCur = cCur.length > 1 ? cCur.slice(0, -1) : '0';
-    cRender();
-  }
-  function calcUseGrand() {
-    cCur = String(getGrandTotal()); cFresh = true; cRender();
-    showMsg('📊 Grand total loaded into calculator', 'ok');
+  function toCSV(data) {
+    var lines = ['Date,Type,Title,Category,Account,Amount'];
+    var sorted = data.transactions.slice().sort(function (a, b) { return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+    sorted.forEach(function (t) {
+      var acct = '';
+      if (t.type === 'transfer') {
+        var f = findAccount(data, t.accountId), tt = findAccount(data, t.toAccountId);
+        acct = (f ? f.name : '') + ' -> ' + (tt ? tt.name : '');
+      } else {
+        var a = findAccount(data, t.accountId);
+        acct = a ? a.name : '';
+      }
+      lines.push([t.date, t.type, csvEscape(t.title), csvEscape(t.category || ''), csvEscape(acct), num(t.amount)].join(','));
+    });
+    return lines.join('\n') + '\n';
   }
 
-  /* ---------- Settings ---------- */
-  function openSettings() {
-    document.getElementById('webhookInput').value = getWebhook();
-    document.getElementById('settingsModal').classList.add('open');
-  }
-  function closeSettings() {
-    document.getElementById('settingsModal').classList.remove('open');
-  }
-  function saveSettings() {
-    var u = document.getElementById('webhookInput').value.trim();
-    if (!u) { return; }
-    localStorage.setItem('lea_webhook', u);
-    closeSettings();
-    showMsg('⚙️ Settings saved!', 'ok');
-  }
+  return {
+    STORE_KEY: STORE_KEY, OLD_KEY: OLD_KEY, WEBHOOK_KEY: WEBHOOK_KEY,
+    uid: uid, pad: pad, fmtDate: fmtDate, todayStr: todayStr, monthKey: monthKey, num: num,
+    defaultData: defaultData, oldDateToISO: oldDateToISO, migrateIfNeeded: migrateIfNeeded,
+    loadData: loadData, saveData: saveData, findAccount: findAccount,
+    accountBalance: accountBalance, totalBalance: totalBalance, monthTotals: monthTotals,
+    categoryTotals: categoryTotals, budgetStatus: budgetStatus, monthlyBudgets: monthlyBudgets,
+    nextDue: nextDue, postRecurring: postRecurring, debtPaid: debtPaid, debtRemaining: debtRemaining,
+    debtTotals: debtTotals, goalProgress: goalProgress, sixMonthSeries: sixMonthSeries,
+    topExpenses: topExpenses, toCSV: toCSV
+  };
+})();
+/* ==== END LFT CORE ==== */
 </script>
-<div id="loona-legal-bar" style="background:#062e2a;color:#f3e9c8;text-align:center;padding:14px 12px;font:14px/1.6 system-ui,sans-serif;border-top:3px solid #d4af37;margin-top:24px">
-© 2026 Loona Automation · Contact: <a href="mailto:loonaautomation@gmail.com" style="color:#ffd95e">loonaautomation@gmail.com</a><br>
-<a href="index.html" style="color:#ffd95e;margin:0 8px">Home</a>·<a href="about.html" style="color:#ffd95e;margin:0 8px">About</a>·<a href="contact.html" style="color:#ffd95e;margin:0 8px">Contact</a>·<a href="privacy-policy.html" style="color:#ffd95e;margin:0 8px">Privacy Policy</a>
-</div>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
 
-<section class="loona-faq" style="max-width:860px;margin:34px auto;padding:22px 20px;background:#ffffff;border:1px solid #e4dfcd;border-radius:14px;text-align:left">
-<h2 style="color:#062e2a;margin:0 0 12px">Frequently Asked Questions</h2>
-<h3>Is the Loona Expense App free?</h3>
-<p>Yes. The Loona Expense App is completely free and needs no signup. Open the page and start adding expenses in one click.</p>
-<h3>Does it work without internet?</h3>
-<p>Yes. The app works fully offline, and your expenses stay saved on your own device, so you can track spending anywhere.</p>
-<h3>What can I track with it?</h3>
-<p>Any daily expense — tea, food, transport, mobile recharge, groceries, medicine, fuel, clothing and more — with ready-made categories, a grand total, today's total and a full list of entries by date.</p>
-<h3>Can I export my expenses?</h3>
-<p>Yes. You can export your expenses as an Excel/CSV file whenever you want a copy or a report.</p>
-<h3>Do I need cloud backup?</h3>
-<p>No. Cloud backup is optional and only for advanced users who want to copy their data to their own Google Sheet. The app works 100% without it.</p>
-</section>
+<script>
+/* ==== LFT UI ==== */
+var storage = window.localStorage;
+var TODAY = LFT.todayStr();
+var CURMK = TODAY.slice(0, 7);
+var data = LFT.loadData(storage, TODAY);
+var editingTxId = null, txType = 'expense', ruleType = 'expense', debtDir = 'lent';
+var miniAction = null;
+
+var CURR = { PKR: 'Rs', USD: '$', EUR: '€', GBP: '£', AED: 'AED ', SAR: 'SAR ', KWD: 'KD ', INR: '₹', BDT: '৳' };
+var PALETTE = ['#d4af37', '#2fae72', '#3d7ea6', '#e0524d', '#8e6cc8', '#e8a13a', '#4db6ac', '#ba68c8', '#a1887f', '#90a4ae'];
+
+function save() { LFT.saveData(storage, data); }
+function fmt(n) {
+  var sym = CURR[data.settings.currency] || 'Rs ';
+  var v = Math.round(LFT.num(n) * 100) / 100;
+  var neg = v < 0; v = Math.abs(v);
+  var s = v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  return (neg ? '−' : '') + sym + (sym.length <= 2 && sym !== 'Rs' ? '' : ' ') + s;
+}
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function catIcon(type, name) {
+  var list = data.categories[type] || [];
+  for (var i = 0; i < list.length; i++) if (list[i].name === name) return list[i].icon;
+  return '📦';
+}
+function acctName(id) { var a = LFT.findAccount(data, id); return a ? a.name : '—'; }
+function showMsg(t, c) {
+  var m = document.getElementById('msg');
+  m.textContent = t; m.className = c || '';
+  setTimeout(function () { if (m.textContent === t) m.textContent = ''; }, 4000);
+}
+function fireWebhook(tx) {
+  try {
+    var wh = storage.getItem(LFT.WEBHOOK_KEY);
+    if (!wh) return;
+    fetch(wh, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tx) }).catch(function () {});
+  } catch (e) {}
+}
+
+function showView(name) {
+  var views = document.querySelectorAll('.view');
+  for (var i = 0; i < views.length; i++) views[i].classList.toggle('active', views[i].id === 'view-' + name);
+  var tabs = document.querySelectorAll('#tabBar .tab');
+  for (var j = 0; j < tabs.length; j++) tabs[j].classList.toggle('active', tabs[j].getAttribute('data-view') === name);
+  renderAll();
+}
+function renderAll() {
+  renderDashboard(); renderTxns(); renderAccounts(); renderBudgets();
+  renderBills(); renderDebts(); renderGoals(); renderReports(); renderSettings();
+}
+
+/* ---------- Dashboard ---------- */
+function renderDashboard() {
+  document.getElementById('dBalance').textContent = fmt(LFT.totalBalance(data));
+  var t = LFT.monthTotals(data, CURMK);
+  document.getElementById('dInc').textContent = fmt(t.income);
+  document.getElementById('dExp').textContent = fmt(t.expense);
+  document.getElementById('dNet').textContent = fmt(t.net);
+  var names = document.querySelectorAll('.mname');
+  var mn = new Date().toLocaleString('en-US', { month: 'long' });
+  for (var i = 0; i < names.length; i++) names[i].textContent = mn;
+
+  /* Due now */
+  var due = data.recurring.filter(function (r) { return r.nextDue <= TODAY; });
+  var dueHtml = '';
+  if (due.length) {
+    dueHtml = '<h2 class="sec">⏰ Due Now — tap to post</h2>';
+    due.forEach(function (r) {
+      dueHtml += '<div class="alert due">🔁 <strong>' + esc(r.title) + '</strong> · ' + fmt(r.amount) + ' · due ' + esc(r.nextDue) +
+        ' <button class="btn-small" style="margin:4px 0 0 8px" onclick="postRule(\'' + r.id + '\')">✔ Post it</button></div>';
+    });
+  }
+  document.getElementById('dDue').innerHTML = dueHtml;
+
+  /* Budget alerts */
+  var alerts = '';
+  LFT.monthlyBudgets(data, CURMK).forEach(function (b) {
+    if (b.st.state === 'warn') alerts += '<div class="alert warn">⚠️ <strong>' + esc(b.label) + '</strong> budget is at ' + b.st.pct + '% — ' + fmt(b.st.remaining) + ' left of ' + fmt(b.st.limit) + '.</div>';
+    if (b.st.state === 'over') alerts += '<div class="alert over">🚨 <strong>' + esc(b.label) + '</strong> budget exceeded — spent ' + fmt(b.st.spent) + ' of ' + fmt(b.st.limit) + '.</div>';
+  });
+  document.getElementById('dAlerts').innerHTML = alerts;
+
+  drawDonut(t.expense);
+  drawBars();
+
+  /* Upcoming bills: next 7 days, not yet due */
+  var in7 = LFT.fmtDate(new Date(Date.now() + 7 * 864e5));
+  var up = data.recurring.filter(function (r) { return r.nextDue > TODAY && r.nextDue <= in7; })
+    .sort(function (a, b) { return a.nextDue < b.nextDue ? -1 : 1; });
+  var uh = '';
+  if (!up.length) uh = '<p class="empty">No bills due in the next 7 days.</p>';
+  up.forEach(function (r) {
+    uh += '<div class="item"><div><div class="t">' + (r.type === 'income' ? '💚' : '🧾') + ' ' + esc(r.title) + '</div><div class="m">' + esc(r.nextDue) + ' · ' + esc(r.freq) + ' · ' + esc(acctName(r.accountId)) + '</div></div><div class="a ' + (r.type === 'income' ? 'a-inc' : 'a-exp') + '">' + fmt(r.amount) + '</div></div>';
+  });
+  document.getElementById('dUpcoming').innerHTML = uh;
+
+  var dt = LFT.debtTotals(data);
+  document.getElementById('dOwedToYou').textContent = fmt(dt.toYou);
+  document.getElementById('dYouOwe').textContent = fmt(dt.youOwe);
+}
+function drawDonut(monthExpense) {
+  var cv = document.getElementById('donut');
+  var ctx = cv.getContext('2d');
+  var W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  var cats = LFT.categoryTotals(data, CURMK, 'expense');
+  var legend = document.getElementById('donutLegend');
+  if (!cats.length || monthExpense <= 0) {
+    ctx.fillStyle = '#8fa8a1'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('No expenses recorded this month yet.', W / 2, H / 2);
+    legend.innerHTML = '';
+    return;
+  }
+  var cx = 95, cy = H / 2, R = 72, r = 40;
+  var ang = -Math.PI / 2;
+  cats.forEach(function (c, i) {
+    var slice = (c.total / monthExpense) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, ang, ang + slice);
+    ctx.arc(cx, cy, r, ang + slice, ang, true);
+    ctx.closePath();
+    ctx.fillStyle = PALETTE[i % PALETTE.length];
+    ctx.fill();
+    ang += slice;
+  });
+  ctx.fillStyle = '#ffd95e'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(fmt(monthExpense), cx, cy + 5);
+  var lh = '';
+  cats.forEach(function (c, i) {
+    lh += '<div class="row"><span><span class="dot" style="background:' + PALETTE[i % PALETTE.length] + '"></span>' + esc(catIcon('expense', c.category)) + ' ' + esc(c.category) + '</span><span>' + fmt(c.total) + ' · ' + Math.round(c.total / monthExpense * 100) + '%</span></div>';
+  });
+  legend.innerHTML = lh;
+}
+function drawBars() {
+  var cv = document.getElementById('bars');
+  var ctx = cv.getContext('2d');
+  var W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  var series = LFT.sixMonthSeries(data, new Date());
+  var max = 1;
+  series.forEach(function (s) { max = Math.max(max, s.income, s.expense); });
+  var base = H - 28, top = 12, bw = 22, group = (W - 20) / 6;
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.beginPath(); ctx.moveTo(8, base); ctx.lineTo(W - 4, base); ctx.stroke();
+  var mons = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  series.forEach(function (s, i) {
+    var x = 14 + i * group;
+    var ih = (s.income / max) * (base - top), eh = (s.expense / max) * (base - top);
+    ctx.fillStyle = '#2fae72'; ctx.fillRect(x, base - ih, bw, ih);
+    ctx.fillStyle = '#e0524d'; ctx.fillRect(x + bw + 5, base - eh, bw, eh);
+    ctx.fillStyle = '#a9c4bd'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(mons[+s.key.slice(5, 7) - 1], x + bw + 2, base + 16);
+  });
+  ctx.fillStyle = '#5fd598'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('■ Income', 10, 12);
+  ctx.fillStyle = '#ff9d97';
+  ctx.fillText('■ Expenses', 74, 12);
+}
+
+/* ---------- Transactions ---------- */
+function fillFilterSelects() {
+  var fc = document.getElementById('fCategory');
+  var cur = fc.value;
+  var opts = '<option value="all">All categories</option>';
+  ['expense', 'income'].forEach(function (tp) {
+    data.categories[tp].forEach(function (c) { opts += '<option value="' + esc(c.name) + '">' + esc(c.icon) + ' ' + esc(c.name) + '</option>'; });
+  });
+  fc.innerHTML = opts; if (cur) fc.value = cur;
+  var fa = document.getElementById('fAccount');
+  var cura = fa.value;
+  var o2 = '<option value="all">All accounts</option>';
+  data.accounts.forEach(function (a) { o2 += '<option value="' + a.id + '">' + esc(a.name) + '</option>'; });
+  fa.innerHTML = o2; if (cura) fa.value = cura;
+}
+function renderTxns() {
+  fillFilterSelects();
+  var q = (document.getElementById('fSearch').value || '').toLowerCase();
+  var fm = document.getElementById('fMonth').value;
+  var ft = document.getElementById('fType').value;
+  var fc = document.getElementById('fCategory').value;
+  var fa = document.getElementById('fAccount').value;
+  var list = data.transactions.filter(function (t) {
+    if (fm && LFT.monthKey(t.date) !== fm) return false;
+    if (ft !== 'all' && t.type !== ft) return false;
+    if (fc !== 'all' && t.category !== fc) return false;
+    if (fa !== 'all' && t.accountId !== fa && t.toAccountId !== fa) return false;
+    if (q && (t.title + ' ' + (t.category || '')).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  var el = document.getElementById('txnList');
+  if (!list.length) { el.innerHTML = '<p class="empty">No transactions match. Tap + Income or − Expense to add one.</p>'; return; }
+  var byDate = {}, order = [];
+  list.forEach(function (t) { if (!byDate[t.date]) { byDate[t.date] = []; order.push(t.date); } byDate[t.date].push(t); });
+  order.sort().reverse();
+  var html = '';
+  order.forEach(function (d) {
+    var dayNet = 0;
+    byDate[d].forEach(function (t) { if (t.type === 'income') dayNet += LFT.num(t.amount); else if (t.type === 'expense') dayNet -= LFT.num(t.amount); });
+    html += '<div class="date-header"><span>📅 ' + esc(d) + '</span><span>' + fmt(dayNet) + '</span></div>';
+    byDate[d].forEach(function (t) {
+      var icon = t.type === 'transfer' ? '⇄' : catIcon(t.type, t.category);
+      var meta = t.type === 'transfer'
+        ? esc(acctName(t.accountId)) + ' → ' + esc(acctName(t.toAccountId))
+        : esc(t.category || '') + ' · ' + esc(acctName(t.accountId));
+      var cls = t.type === 'income' ? 'a-inc' : (t.type === 'expense' ? 'a-exp' : 'a-trf');
+      var sign = t.type === 'income' ? '+' : (t.type === 'expense' ? '−' : '');
+      html += '<div class="item"><div><div class="t">' + icon + ' ' + esc(t.title) + '</div><div class="m">' + meta + '</div></div>' +
+        '<div style="display:flex;align-items:center"><span class="a ' + cls + '">' + sign + fmt(t.amount) + '</span>' +
+        '<button class="icon-btn" title="Edit" onclick="editTx(\'' + t.id + '\')">✏️</button>' +
+        '<button class="icon-btn" title="Delete" onclick="deleteTx(\'' + t.id + '\')">🗑️</button></div></div>';
+    });
+  });
+  el.innerHTML = html;
+}
+function fillSelect(el, items, valueFn, labelFn, selected) {
+  var html = '';
+  items.forEach(function (it) { html += '<option value="' + esc(valueFn(it)) + '"' + (valueFn(it) === selected ? ' selected' : '') + '>' + esc(labelFn(it)) + '</option>'; });
+  el.innerHTML = html;
+}
+function txTypeSet(t) {
+  txType = t;
+  var btns = document.querySelectorAll('#txSeg button');
+  for (var i = 0; i < btns.length; i++) {
+    var b = btns[i], on = b.getAttribute('data-t') === t;
+    b.className = on ? ('on-' + (t === 'expense' ? 'exp' : t === 'income' ? 'inc' : 'trf')) : '';
+  }
+  document.getElementById('txCatRow').style.display = t === 'transfer' ? 'none' : 'block';
+  document.getElementById('txAcctRow').style.display = t === 'transfer' ? 'none' : 'block';
+  document.getElementById('txFromRow').style.display = t === 'transfer' ? 'block' : 'none';
+  document.getElementById('txToRow').style.display = t === 'transfer' ? 'block' : 'none';
+  if (t !== 'transfer') {
+    fillSelect(document.getElementById('txCategory'), data.categories[t], function (c) { return c.name; }, function (c) { return c.icon + ' ' + c.name; });
+  }
+}
+function openTxForm(type, tx) {
+  editingTxId = tx ? tx.id : null;
+  txTypeSet(tx ? tx.type : type);
+  document.getElementById('txModalTitle').textContent = (tx ? 'Edit ' : 'Add ') + (txType === 'expense' ? 'Expense' : txType === 'income' ? 'Income' : 'Transfer');
+  fillSelect(document.getElementById('txAccount'), data.accounts, function (a) { return a.id; }, function (a) { return a.name; }, tx ? tx.accountId : undefined);
+  fillSelect(document.getElementById('txFrom'), data.accounts, function (a) { return a.id; }, function (a) { return a.name; }, tx ? tx.accountId : undefined);
+  fillSelect(document.getElementById('txTo'), data.accounts, function (a) { return a.id; }, function (a) { return a.name; }, tx ? tx.toAccountId : (data.accounts[1] ? data.accounts[1].id : undefined));
+  if (tx && tx.type !== 'transfer') {
+    fillSelect(document.getElementById('txCategory'), data.categories[tx.type], function (c) { return c.name; }, function (c) { return c.icon + ' ' + c.name; }, tx.category);
+  }
+  document.getElementById('txAmount').value = tx ? tx.amount : '';
+  document.getElementById('txTitle').value = tx ? tx.title : '';
+  document.getElementById('txDate').value = tx ? tx.date : TODAY;
+  document.getElementById('txModal').classList.add('open');
+}
+function editTx(id) {
+  for (var i = 0; i < data.transactions.length; i++) if (data.transactions[i].id === id) { openTxForm(data.transactions[i].type, data.transactions[i]); return; }
+}
+function saveTx() {
+  var amount = LFT.num(document.getElementById('txAmount').value);
+  var title = document.getElementById('txTitle').value.trim();
+  var date = document.getElementById('txDate').value || TODAY;
+  if (amount <= 0) { alert('Please enter a valid amount.'); return; }
+  if (txType === 'transfer' && document.getElementById('txFrom').value === document.getElementById('txTo').value) {
+    alert('From and To accounts must be different.'); return;
+  }
+  if (!title) title = txType === 'transfer' ? 'Transfer' : (document.getElementById('txCategory').value || 'Entry');
+  var tx;
+  if (editingTxId) {
+    for (var i = 0; i < data.transactions.length; i++) if (data.transactions[i].id === editingTxId) { tx = data.transactions[i]; break; }
+    if (!tx) return;
+    tx.type = txType; tx.amount = amount; tx.title = title; tx.date = date;
+  } else {
+    tx = { id: LFT.uid(), type: txType, amount: amount, title: title, date: date, category: null, accountId: null, toAccountId: null };
+    data.transactions.unshift(tx);
+  }
+  if (txType === 'transfer') {
+    tx.accountId = document.getElementById('txFrom').value;
+    tx.toAccountId = document.getElementById('txTo').value;
+    tx.category = null;
+  } else {
+    tx.category = document.getElementById('txCategory').value;
+    tx.accountId = document.getElementById('txAccount').value;
+    tx.toAccountId = null;
+  }
+  save();
+  closeModal('txModal');
+  if (!editingTxId) fireWebhook(tx);
+  showMsg('✅ Saved!', 'ok');
+  renderAll();
+}
+function deleteTx(id) {
+  if (!confirm('Delete this transaction?')) return;
+  data.transactions = data.transactions.filter(function (t) { return t.id !== id; });
+  save(); renderAll();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+</script>
+
+<script>
+/* ==== LFT UI part 2: accounts, budgets, bills, debts, goals, reports, settings ==== */
+function openMini(title, label, fn) {
+  document.getElementById('miniTitle').textContent = title;
+  document.getElementById('miniLabel').textContent = label;
+  document.getElementById('miniAmount').value = '';
+  miniAction = fn;
+  document.getElementById('miniModal').classList.add('open');
+}
+function miniSave() {
+  var v = LFT.num(document.getElementById('miniAmount').value);
+  var fn = miniAction; miniAction = null;
+  closeModal('miniModal');
+  if (fn) fn(v);
+}
+
+/* ---------- Accounts & categories ---------- */
+function renderAccounts() {
+  var html = '';
+  data.accounts.forEach(function (a) {
+    html += '<div class="item"><div><div class="t">🏦 ' + esc(a.name) + '</div><div class="m">Opening: ' + fmt(a.opening) + '</div></div>' +
+      '<div style="display:flex;align-items:center"><span class="a v-net">' + fmt(LFT.accountBalance(data, a.id)) + '</span>' +
+      '<button class="icon-btn" title="Edit opening balance" onclick="editOpening(\'' + a.id + '\')">✏️</button>' +
+      '<button class="icon-btn" title="Delete account" onclick="deleteAccount(\'' + a.id + '\')">🗑️</button></div></div>';
+  });
+  document.getElementById('acctList').innerHTML = html || '<p class="empty">No accounts yet.</p>';
+  var cl = '';
+  ['expense', 'income'].forEach(function (tp) {
+    data.categories[tp].forEach(function (c) {
+      cl += '<div class="item"><div class="t">' + esc(c.icon) + ' ' + esc(c.name) + '</div><div class="m">' + tp + '</div>' +
+        '<button class="icon-btn" title="Delete category" onclick="deleteCategory(\'' + tp + '\',\'' + esc(c.name) + '\')">🗑️</button></div>';
+    });
+  });
+  document.getElementById('catList').innerHTML = cl;
+}
+function addAccount() {
+  var name = document.getElementById('acName').value.trim();
+  if (!name) { alert('Please enter an account name.'); return; }
+  data.accounts.push({ id: LFT.uid(), name: name, opening: LFT.num(document.getElementById('acOpening').value) });
+  document.getElementById('acName').value = ''; document.getElementById('acOpening').value = '';
+  save(); showMsg('✅ Account added!', 'ok'); renderAll();
+}
+function editOpening(id) {
+  var a = LFT.findAccount(data, id); if (!a) return;
+  openMini('Opening Balance — ' + a.name, 'Opening balance', function (v) { a.opening = v; save(); renderAll(); });
+  document.getElementById('miniAmount').value = a.opening;
+}
+function deleteAccount(id) {
+  if (data.accounts.length <= 1) { alert('You need at least one account.'); return; }
+  if (!confirm('Delete this account? Its transactions stay in history but will show no account.')) return;
+  data.accounts = data.accounts.filter(function (a) { return a.id !== id; });
+  save(); renderAll();
+}
+function addCategory() {
+  var tp = document.getElementById('ccType').value;
+  var name = document.getElementById('ccName').value.trim();
+  var icon = document.getElementById('ccIcon').value.trim() || '🏷️';
+  if (!name) { alert('Please enter a category name.'); return; }
+  for (var i = 0; i < data.categories[tp].length; i++) if (data.categories[tp][i].name.toLowerCase() === name.toLowerCase()) { alert('That category already exists.'); return; }
+  data.categories[tp].push({ name: name, icon: icon });
+  document.getElementById('ccName').value = ''; document.getElementById('ccIcon').value = '';
+  save(); showMsg('✅ Category added!', 'ok'); renderAll();
+}
+function deleteCategory(tp, name) {
+  if (!confirm('Delete category "' + name + '"? Existing transactions keep their history.')) return;
+  data.categories[tp] = data.categories[tp].filter(function (c) { return c.name !== name; });
+  if (data.budgets.per[name] != null) delete data.budgets.per[name];
+  save(); renderAll();
+}
+
+/* ---------- Budgets ---------- */
+function renderBudgets() {
+  document.getElementById('bOverall').value = data.budgets.overall || '';
+  var spentBy = {};
+  LFT.categoryTotals(data, CURMK, 'expense').forEach(function (c) { spentBy[c.category] = c.total; });
+  var html = '';
+  data.categories.expense.forEach(function (c) {
+    var limit = data.budgets.per[c.name] || 0;
+    var spent = spentBy[c.name] || 0;
+    var st = LFT.budgetStatus(limit, spent);
+    var barCls = st.state === 'over' ? 'over' : (st.state === 'warn' ? 'warn' : '');
+    var pctW = limit > 0 ? Math.min(100, st.pct) : 0;
+    html += '<div class="item" style="display:block"><div style="display:flex;justify-content:space-between"><span class="t">' + esc(c.icon) + ' ' + esc(c.name) + '</span>' +
+      '<span>' + fmt(spent) + (limit > 0 ? ' / ' + fmt(limit) + ' · ' + st.pct + '%' : ' · no budget') + '</span></div>' +
+      (limit > 0 ? '<div class="bar"><div class="' + barCls + '" style="width:' + pctW + '%"></div></div>' : '') +
+      '<button class="btn-small" onclick="setCatBudget(\'' + esc(c.name) + '\')">' + (limit > 0 ? 'Edit budget' : 'Set budget') + '</button></div>';
+  });
+  document.getElementById('budgetList').innerHTML = html;
+}
+function saveOverallBudget() {
+  data.budgets.overall = LFT.num(document.getElementById('bOverall').value);
+  save(); showMsg('✅ Overall budget saved!', 'ok'); renderAll();
+}
+function setCatBudget(cat) {
+  openMini('Budget — ' + cat, 'Monthly limit (0 removes the budget)', function (v) {
+    if (v > 0) data.budgets.per[cat] = v; else delete data.budgets.per[cat];
+    save(); renderAll();
+  });
+  document.getElementById('miniAmount').value = data.budgets.per[cat] || '';
+}
+
+/* ---------- Bills & recurring ---------- */
+function ruleTypeSet(t) {
+  ruleType = t;
+  var btns = document.querySelectorAll('#ruleSeg button');
+  for (var i = 0; i < btns.length; i++) {
+    var b = btns[i], on = b.getAttribute('data-t') === t;
+    b.className = on ? (t === 'expense' ? 'on-exp' : 'on-inc') : '';
+  }
+  fillSelect(document.getElementById('rCategory'), data.categories[t], function (c) { return c.name; }, function (c) { return c.icon + ' ' + c.name; });
+}
+function renderBills() {
+  var due = data.recurring.filter(function (r) { return r.nextDue <= TODAY; });
+  var dh = '';
+  if (due.length) {
+    dh = '<h2 class="sec">⏰ Due Now</h2>';
+    due.forEach(function (r) {
+      dh += '<div class="alert due">🔁 <strong>' + esc(r.title) + '</strong> · ' + fmt(r.amount) + ' · due ' + esc(r.nextDue) +
+        ' <button class="btn-small" style="margin:4px 0 0 8px" onclick="postRule(\'' + r.id + '\')">✔ Post it</button></div>';
+    });
+  }
+  document.getElementById('dueNow').innerHTML = dh;
+  var html = '';
+  var sorted = data.recurring.slice().sort(function (a, b) { return a.nextDue < b.nextDue ? -1 : 1; });
+  sorted.forEach(function (r) {
+    html += '<div class="item"><div><div class="t">' + (r.type === 'income' ? '💚' : '🧾') + ' ' + esc(r.title) + '</div>' +
+      '<div class="m">' + esc(r.category || '') + ' · ' + esc(acctName(r.accountId)) + ' · ' + esc(r.freq) + ' · next: ' + esc(r.nextDue) + '</div></div>' +
+      '<div style="display:flex;align-items:center"><span class="a ' + (r.type === 'income' ? 'a-inc' : 'a-exp') + '">' + fmt(r.amount) + '</span>' +
+      '<button class="icon-btn" title="Delete rule" onclick="deleteRule(\'' + r.id + '\')">🗑️</button></div></div>';
+  });
+  document.getElementById('ruleList').innerHTML = html || '<p class="empty">No recurring rules yet. Add your rent, bills or salary below.</p>';
+  fillSelect(document.getElementById('rAccount'), data.accounts, function (a) { return a.id; }, function (a) { return a.name; });
+  if (!document.getElementById('rCategory').options.length) ruleTypeSet(ruleType);
+}
+function addRule() {
+  var title = document.getElementById('rTitle').value.trim();
+  var amount = LFT.num(document.getElementById('rAmount').value);
+  var next = document.getElementById('rNext').value;
+  if (!title) { alert('Please enter a title.'); return; }
+  if (amount <= 0) { alert('Please enter a valid amount.'); return; }
+  if (!next) { alert('Please pick the next due date.'); return; }
+  data.recurring.push({ id: LFT.uid(), type: ruleType, title: title, amount: amount,
+    category: document.getElementById('rCategory').value, accountId: document.getElementById('rAccount').value,
+    freq: document.getElementById('rFreq').value, nextDue: next });
+  document.getElementById('rTitle').value = ''; document.getElementById('rAmount').value = '';
+  save(); showMsg('✅ Recurring rule added!', 'ok'); renderAll();
+}
+function postRule(id) {
+  var tx = LFT.postRecurring(data, id, TODAY);
+  if (tx) { save(); fireWebhook(tx); showMsg('✅ Posted: ' + tx.title, 'ok'); renderAll(); }
+}
+function deleteRule(id) {
+  if (!confirm('Delete this recurring rule?')) return;
+  data.recurring = data.recurring.filter(function (r) { return r.id !== id; });
+  save(); renderAll();
+}
+
+/* ---------- Debts ---------- */
+function debtDirSet(d) {
+  debtDir = d;
+  var btns = document.querySelectorAll('#debtSeg button');
+  for (var i = 0; i < btns.length; i++) {
+    var b = btns[i], on = b.getAttribute('data-t') === d;
+    b.className = on ? (d === 'lent' ? 'on-inc' : 'on-exp') : '';
+  }
+}
+function renderDebts() {
+  var dt = LFT.debtTotals(data);
+  document.getElementById('debtToYou').textContent = fmt(dt.toYou);
+  document.getElementById('debtYouOwe').textContent = fmt(dt.youOwe);
+  var html = '';
+  data.debts.forEach(function (d) {
+    var rem = LFT.debtRemaining(d);
+    var pct = d.amount > 0 ? Math.min(100, Math.round(LFT.debtPaid(d) / d.amount * 100)) : 100;
+    html += '<div class="item" style="display:block"><div style="display:flex;justify-content:space-between"><span class="t">' + (d.direction === 'lent' ? '📤' : '📥') + ' ' + esc(d.person) + '</span>' +
+      '<span class="a ' + (d.direction === 'lent' ? 'a-inc' : 'a-exp') + '">' + fmt(rem) + ' left</span></div>' +
+      '<div class="m">' + (d.direction === 'lent' ? 'You lent' : 'You borrowed') + ' ' + fmt(d.amount) + ' on ' + esc(d.date) +
+      (d.due ? ' · due ' + esc(d.due) : '') + (d.note ? ' · ' + esc(d.note) : '') + ' · paid ' + fmt(LFT.debtPaid(d)) + '</div>' +
+      '<div class="bar"><div class="gold" style="width:' + pct + '%"></div></div>' +
+      (rem > 0 ? '<button class="btn-small" onclick="debtPayment(\'' + d.id + '\')">Add payment</button><button class="btn-small" onclick="debtSettle(\'' + d.id + '\')">Mark settled</button>' : '<span style="color:#5fd598;font-size:13px">✔ Settled</span>') +
+      '<button class="btn-small btn-danger" onclick="deleteDebt(\'' + d.id + '\')">Delete</button></div>';
+  });
+  document.getElementById('debtList').innerHTML = html || '<p class="empty">No debts recorded. Add money you lent or borrowed below.</p>';
+}
+function addDebt() {
+  var person = document.getElementById('dbPerson').value.trim();
+  var amount = LFT.num(document.getElementById('dbAmount').value);
+  if (!person) { alert('Please enter the person\'s name.'); return; }
+  if (amount <= 0) { alert('Please enter a valid amount.'); return; }
+  data.debts.unshift({ id: LFT.uid(), direction: debtDir, person: person, amount: amount,
+    date: document.getElementById('dbDate').value || TODAY,
+    due: document.getElementById('dbDue').value || null,
+    note: document.getElementById('dbNote').value.trim(), payments: [] });
+  document.getElementById('dbPerson').value = ''; document.getElementById('dbAmount').value = ''; document.getElementById('dbNote').value = '';
+  save(); showMsg('✅ Debt record added!', 'ok'); renderAll();
+}
+function findDebt(id) { for (var i = 0; i < data.debts.length; i++) if (data.debts[i].id === id) return data.debts[i]; return null; }
+function debtPayment(id) {
+  var d = findDebt(id); if (!d) return;
+  openMini('Payment — ' + d.person, 'Payment amount', function (v) {
+    if (v <= 0) { alert('Enter an amount above zero.'); return; }
+    d.payments.push({ amount: v, date: TODAY }); save(); renderAll();
+  });
+}
+function debtSettle(id) {
+  var d = findDebt(id); if (!d) return;
+  var rem = LFT.debtRemaining(d);
+  if (rem <= 0) return;
+  if (!confirm('Mark the remaining ' + fmt(rem) + ' as fully settled?')) return;
+  d.payments.push({ amount: rem, date: TODAY });
+  save(); renderAll();
+}
+function deleteDebt(id) {
+  if (!confirm('Delete this debt record?')) return;
+  data.debts = data.debts.filter(function (d) { return d.id !== id; });
+  save(); renderAll();
+}
+
+/* ---------- Goals ---------- */
+function renderGoals() {
+  var html = '';
+  data.goals.forEach(function (g) {
+    var pct = LFT.goalProgress(g);
+    html += '<div class="item" style="display:block"><div style="display:flex;justify-content:space-between"><span class="t">🐷 ' + esc(g.name) + '</span>' +
+      '<span>' + fmt(g.saved) + ' / ' + fmt(g.target) + ' · ' + pct + '%</span></div>' +
+      '<div class="bar"><div class="gold" style="width:' + Math.min(100, pct) + '%"></div></div>' +
+      (g.targetDate ? '<div class="m">Target date: ' + esc(g.targetDate) + '</div>' : '') +
+      '<button class="btn-small" onclick="goalAdjust(\'' + g.id + '\',1)">+ Add money</button>' +
+      '<button class="btn-small" onclick="goalAdjust(\'' + g.id + '\',-1)">− Take out</button>' +
+      '<button class="btn-small btn-danger" onclick="deleteGoal(\'' + g.id + '\')">Delete</button></div>';
+  });
+  document.getElementById('goalList').innerHTML = html || '<p class="empty">No savings goals yet. Add your first goal below.</p>';
+}
+function addGoal() {
+  var name = document.getElementById('gName').value.trim();
+  var target = LFT.num(document.getElementById('gTarget').value);
+  if (!name) { alert('Please enter a goal name.'); return; }
+  if (target <= 0) { alert('Please enter a valid target amount.'); return; }
+  data.goals.unshift({ id: LFT.uid(), name: name, target: target, saved: 0, targetDate: document.getElementById('gDate').value || null });
+  document.getElementById('gName').value = ''; document.getElementById('gTarget').value = '';
+  save(); showMsg('✅ Goal added!', 'ok'); renderAll();
+}
+function goalAdjust(id, sign) {
+  var g = null;
+  for (var i = 0; i < data.goals.length; i++) if (data.goals[i].id === id) g = data.goals[i];
+  if (!g) return;
+  openMini((sign > 0 ? 'Add to' : 'Take out of') + ' — ' + g.name, 'Amount', function (v) {
+    if (v <= 0) { alert('Enter an amount above zero.'); return; }
+    g.saved = Math.max(0, LFT.num(g.saved) + sign * v);
+    save(); renderAll();
+  });
+}
+function deleteGoal(id) {
+  if (!confirm('Delete this goal?')) return;
+  data.goals = data.goals.filter(function (g) { return g.id !== id; });
+  save(); renderAll();
+}
+
+/* ---------- Reports ---------- */
+function renderReports() {
+  var inp = document.getElementById('repMonth');
+  if (!inp.value) inp.value = CURMK;
+  var mk = inp.value;
+  var t = LFT.monthTotals(data, mk);
+  var expCats = LFT.categoryTotals(data, mk, 'expense');
+  var incCats = LFT.categoryTotals(data, mk, 'income');
+  var tops = LFT.topExpenses(data, mk, 5);
+  var html = '<div class="stats"><div class="stat"><div class="l">Income</div><div class="v v-inc">' + fmt(t.income) + '</div></div>' +
+    '<div class="stat"><div class="l">Expenses</div><div class="v v-exp">' + fmt(t.expense) + '</div></div>' +
+    '<div class="stat"><div class="l">Net</div><div class="v v-net">' + fmt(t.net) + '</div></div></div>';
+  html += '<h3 class="sec">Expenses by Category</h3>';
+  if (!expCats.length) html += '<p class="empty">No expenses this month.</p>';
+  expCats.forEach(function (c) { html += '<div class="item"><span>' + esc(catIcon('expense', c.category)) + ' ' + esc(c.category) + '</span><span class="a a-exp">' + fmt(c.total) + '</span></div>'; });
+  html += '<h3 class="sec">Income by Category</h3>';
+  if (!incCats.length) html += '<p class="empty">No income this month.</p>';
+  incCats.forEach(function (c) { html += '<div class="item"><span>' + esc(catIcon('income', c.category)) + ' ' + esc(c.category) + '</span><span class="a a-inc">' + fmt(c.total) + '</span></div>'; });
+  html += '<h3 class="sec">🏆 Top 5 Expenses</h3>';
+  if (!tops.length) html += '<p class="empty">No expenses this month.</p>';
+  tops.forEach(function (x) { html += '<div class="item"><div><div class="t">' + esc(x.title) + '</div><div class="m">' + esc(x.date) + ' · ' + esc(x.category || '') + '</div></div><span class="a a-exp">' + fmt(x.amount) + '</span></div>'; });
+  document.getElementById('repBody').innerHTML = html;
+}
+function download(name, text, type) {
+  var blob = new Blob([text], { type: type || 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+}
+function exportCSV() {
+  if (!data.transactions.length) { alert('Nothing to export yet.'); return; }
+  download('loona-finance-transactions.csv', LFT.toCSV(data), 'text/csv;charset=utf-8');
+  showMsg('📥 CSV downloaded!', 'ok');
+}
+function exportBackup() {
+  download('loona-finance-backup.json', JSON.stringify(data, null, 2), 'application/json');
+  showMsg('🧰 Backup downloaded!', 'ok');
+}
+function restoreBackup(input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function () {
+    try {
+      var d = JSON.parse(rd.result);
+      if (!d || !d.accounts || !d.transactions || !d.settings) throw new Error('bad file');
+      if (!confirm('Restore this backup? It will REPLACE all data currently in the app on this device.')) return;
+      data = d; save(); showMsg('♻️ Backup restored!', 'ok'); renderAll();
+    } catch (e) { alert('That file is not a valid Loona Finance Tracker backup.'); }
+    input.value = '';
+  };
+  rd.readAsText(f);
+}
+function printReport() {
+  var mk = document.getElementById('repMonth').value || CURMK;
+  var t = LFT.monthTotals(data, mk);
+  var expCats = LFT.categoryTotals(data, mk, 'expense');
+  var tops = LFT.topExpenses(data, mk, 5);
+  var rows = '';
+  expCats.forEach(function (c) { rows += '<tr><td>' + esc(c.category) + '</td><td style="text-align:right">' + fmt(c.total) + '</td></tr>'; });
+  var topRows = '';
+  tops.forEach(function (x) { topRows += '<tr><td>' + esc(x.date) + '</td><td>' + esc(x.title) + '</td><td>' + esc(x.category || '') + '</td><td style="text-align:right">' + fmt(x.amount) + '</td></tr>'; });
+  document.getElementById('printReport').innerHTML =
+    '<div style="font-size:22px;font-weight:bold">Loona Finance Tracker — Monthly Report</div>' +
+    '<p>Month: <strong>' + esc(mk) + '</strong> · Currency: ' + esc(data.settings.currency) + ' · Generated: ' + TODAY + '</p>' +
+    '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;margin:14px 0">' +
+    '<tr><th>Income</th><th>Expenses</th><th>Net</th></tr>' +
+    '<tr><td>' + fmt(t.income) + '</td><td>' + fmt(t.expense) + '</td><td>' + fmt(t.net) + '</td></tr></table>' +
+    '<h2 style="font-size:17px">Expenses by Category</h2>' +
+    '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;margin:10px 0"><tr><th>Category</th><th>Total</th></tr>' + rows + '</table>' +
+    '<h2 style="font-size:17px">Top 5 Expenses</h2>' +
+    '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;margin:10px 0"><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount</th></tr>' + topRows + '</table>' +
+    '<p style="margin-top:18px;font-size:12px">Total balance across accounts: ' + fmt(LFT.totalBalance(data)) + ' · Loona Finance Tracker by Loona Automation</p>';
+  window.print();
+}
+
+/* ---------- Settings ---------- */
+function renderSettings() {
+  document.getElementById('sCurrency').value = data.settings.currency || 'PKR';
+  var wh = document.getElementById('sWebhook');
+  if (document.activeElement !== wh) { try { wh.value = storage.getItem(LFT.WEBHOOK_KEY) || ''; } catch (e) {} }
+}
+function saveCurrency() {
+  data.settings.currency = document.getElementById('sCurrency').value;
+  save(); showMsg('✅ Currency set to ' + data.settings.currency, 'ok'); renderAll();
+}
+function saveWebhook() {
+  var u = document.getElementById('sWebhook').value.trim();
+  try {
+    if (u) storage.setItem(LFT.WEBHOOK_KEY, u); else storage.removeItem(LFT.WEBHOOK_KEY);
+  } catch (e) {}
+  showMsg('✅ Webhook settings saved!', 'ok');
+}
+function eraseAll() {
+  if (!confirm('Erase ALL Finance Tracker data on this device? This cannot be undone.')) return;
+  if (!confirm('Are you completely sure? All transactions, budgets, bills, debts and goals will be deleted.')) return;
+  try { storage.removeItem(LFT.STORE_KEY); } catch (e) {}
+  data = LFT.defaultData(); save();
+  showMsg('🧹 All Finance Tracker data erased.', 'ok');
+  renderAll();
+}
+
+/* ---------- Calculator (kept from the classic Loona Expense App) ---------- */
+var cCur = '0', cPrev = null, cOp = null, cFresh = true;
+function cRender() { document.getElementById('calcDisplay').textContent = cCur; }
+function openCalc() {
+  var v = LFT.num(document.getElementById('txAmount').value);
+  cCur = v > 0 ? String(v) : '0'; cPrev = null; cOp = null; cFresh = true;
+  cRender();
+  document.getElementById('calcModal').classList.add('open');
+}
+function calcDigit(d) {
+  if (cFresh) { cCur = (d === '.') ? '0.' : d; cFresh = false; }
+  else { if (d === '.' && cCur.indexOf('.') !== -1) return; cCur = (cCur === '0' && d !== '.') ? d : cCur + d; }
+  cRender();
+}
+function calcCompute(a, b, op) {
+  a = parseFloat(a); b = parseFloat(b);
+  if (op === '+') return a + b;
+  if (op === '−') return a - b;
+  if (op === '×') return a * b;
+  if (op === '÷') return b === 0 ? 'Error' : a / b;
+  return b;
+}
+function calcSetOp(op) {
+  if (cOp !== null && !cFresh) { var r = calcCompute(cPrev, cCur, cOp); cCur = String(Math.round(r * 100000000) / 100000000); cRender(); }
+  cPrev = cCur; cOp = op; cFresh = true;
+}
+function calcEquals() {
+  if (cOp === null || cPrev === null) return;
+  var r = calcCompute(cPrev, cCur, cOp);
+  cCur = String(Math.round(r * 100000000) / 100000000);
+  cRender(); cOp = null; cPrev = null; cFresh = true;
+}
+function calcClear() { cCur = '0'; cPrev = null; cOp = null; cFresh = true; cRender(); }
+function calcBack() { if (cFresh) return; cCur = cCur.length > 1 ? cCur.slice(0, -1) : '0'; cRender(); }
+function calcUse() {
+  calcEquals();
+  var v = parseFloat(cCur);
+  if (!isNaN(v) && v >= 0) document.getElementById('txAmount').value = v;
+  closeModal('calcModal');
+}
+
+/* ---------- Init ---------- */
+document.getElementById('rNext').value = TODAY;
+document.getElementById('dbDate').value = TODAY;
+document.getElementById('repMonth').value = CURMK;
+ruleTypeSet('expense');
+debtDirSet('lent');
+renderAll();
+if (data.migrated) showMsg('✅ Welcome! Your old Expense App entries were imported automatically.', 'ok');
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
 </body>
 </html>
