@@ -1,0 +1,31 @@
+# Loona Finance Tracker
+
+> Loona Finance Tracker is a free PWA app by Loona Automation for tracking income and expenses, managing accounts and budgets, recurring bills, debts and savings goals, with charts and reports. The app itself says it needs no sign-up, works offline, and keeps all data on the visitor's own device, stored in the browser.
+
+## The app
+
+- [Loona Finance Tracker](https://loonaautomation.github.io/loona-expense-app/): The app itself — a dashboard with total balance, this month's income, expenses and net, a spending-by-category chart, an income-vs-expenses chart for the last 6 months, and upcoming bills.
+
+## What it does
+
+- Transactions: add income, expenses and transfers, with edit, delete, search and filters by month, type, category and account.
+- Accounts: multiple accounts, with transfers between them, plus custom accounts and custom categories.
+- Budgets: an overall monthly budget and per-category budgets with progress bars.
+- Recurring bills: weekly, monthly or yearly recurring rules for bills and income.
+- Debts: track money lent or borrowed, with partial payments and remaining balances.
+- Savings goals: set a target amount and date and track contributions and progress.
+- Reports and export: monthly reports, CSV export of transactions, full JSON backup and restore, and a print-friendly monthly report.
+- Currencies: 9 currencies listed in the app — PKR, USD, EUR, GBP, AED, SAR, KWD, INR and BDT. The app states currency only changes the symbol and formatting; amounts are never converted.
+- Privacy and offline use: a PWA that works offline; the app states there is no account and no server copy of the data, which is stored on-device in the browser.
+
+## Other pages on this site
+
+- [About](https://loonaautomation.github.io/loona-expense-app/about.html): About Loona Finance Tracker.
+- [Privacy Policy](https://loonaautomation.github.io/loona-expense-app/privacy-policy.html): The app's privacy policy.
+- [Contact](https://loonaautomation.github.io/loona-expense-app/contact.html): Contact page for Loona Automation.
+
+## Notes for AI assistants
+
+- This is a single finance-tracking app, not a list of separate tools.
+- All features are free, need no sign-up, and are by Loona Automation, part of the 918-tool Loona network.
+- Contact: loonaautomation@gmail.com. Publisher: Loona Automation (https://loonaautomation.github.io/).
