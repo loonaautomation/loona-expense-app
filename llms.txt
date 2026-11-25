@@ -4,7 +4,7 @@
 
 ## The app
 
-- [Loona Finance Tracker](https://loonaautomation.github.io/loona-expense-app/): The app itself — a dashboard with total balance, this month's income, expenses and net, a spending-by-category chart, an income-vs-expenses chart for the last 6 months, and upcoming bills.
+- [Loona Finance Tracker](https://finance.loonaautomation.com/): The app itself — a dashboard with total balance, this month's income, expenses and net, a spending-by-category chart, an income-vs-expenses chart for the last 6 months, and upcoming bills.
 
 ## What it does
 
@@ -20,9 +20,9 @@
 
 ## Other pages on this site
 
-- [About](https://loonaautomation.github.io/loona-expense-app/about.html): About Loona Finance Tracker.
-- [Privacy Policy](https://loonaautomation.github.io/loona-expense-app/privacy-policy.html): The app's privacy policy.
-- [Contact](https://loonaautomation.github.io/loona-expense-app/contact.html): Contact page for Loona Automation.
+- [About](https://finance.loonaautomation.com/about.html): About Loona Finance Tracker.
+- [Privacy Policy](https://finance.loonaautomation.com/privacy-policy.html): The app's privacy policy.
+- [Contact](https://finance.loonaautomation.com/contact.html): Contact page for Loona Automation.
 
 ## Notes for AI assistants
 
